@@ -24,7 +24,7 @@ export default function LoginPage() {
     const supabase = createClient();
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'twitter',
+      provider: 'x',
       options: {
         redirectTo: `${origin}/auth/callback`,
         scopes: 'tweet.read tweet.write users.read follows.read offline.access',
