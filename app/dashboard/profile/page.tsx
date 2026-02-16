@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { getUserProfile, getGrowthSummaryMessage } from '@/services/analyticsService';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
+import { useXMe, useXAnalytics } from '@/hooks/useXAnalytics';
 import { createPortalSession } from '@/lib/subscriptionApi';
 import type { UserProfile } from '@/types';
 import { Card } from '@/components/ui/Card';
@@ -15,6 +16,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [mounted, setMounted] = useState(false);
   const { data: subscription, loading: subLoading, refetch: refetchSub } = useSubscriptionStatus(authUser?.email);
+  const { data: xMe } = useXMe();
+  const { data: xAnalytics } = useXAnalytics();
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
 
@@ -31,13 +34,12 @@ export default function ProfilePage() {
     setProfile(fullProfile);
   }, [fullProfile]);
 
-  const growthMessage = useMemo(() => (mounted && authUser ? getGrowthSummaryMessage(authUser) : ''), [mounted, authUser]);
   const pct = profile ? Math.round((profile.repliesUsedToday / profile.repliesLimit) * 100) : 0;
 
   if (!authUser) return null;
 
   const displayPlan = subscription?.plan ?? authUser?.plan ?? 'Trial';
-  const display = profile ?? {
+  const baseDisplay = profile ?? {
     name: authUser.name,
     username: authUser.username,
     email: authUser.email,
@@ -50,6 +52,15 @@ export default function ProfilePage() {
     totalRepliesSent: 0,
     totalEngagementReceived: 0,
   };
+  const display = {
+    ...baseDisplay,
+    followers: xMe?.public_metrics?.followers_count ?? baseDisplay.followers,
+    totalRepliesSent: xAnalytics?.real && xAnalytics.totalReplies != null ? xAnalytics.totalReplies : baseDisplay.totalRepliesSent,
+    totalEngagementReceived: xAnalytics?.real && xAnalytics.totalEngagement != null ? xAnalytics.totalEngagement : baseDisplay.totalEngagementReceived,
+  };
+  const growthMessage = xAnalytics?.real && display.totalEngagementReceived != null
+    ? `Your replies generated ${display.totalEngagementReceived.toLocaleString()} engagements. Keep going!`
+    : (mounted && authUser ? getGrowthSummaryMessage(authUser) : '');
 
   const handleManageSubscription = async () => {
     if (!authUser?.email) {

@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getAnalyticsKPIs } from '@/services/analyticsService';
+import { useXAnalytics } from '@/hooks/useXAnalytics';
 import { mockActivity } from '@/lib/mockActivity';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { Card, CardHeader } from '@/components/ui/Card';
@@ -14,7 +15,18 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const kpis = getAnalyticsKPIs();
+  const { data: xData, loading: xLoading } = useXAnalytics();
+  const kpis = useMemo(() => {
+    if (xData?.real && !xLoading) {
+      return {
+        followersGrowth: xData.followersGrowth,
+        followersCurrent: xData.followersCurrent,
+        repliesSentOverTime: xData.repliesSentOverTime,
+        engagementReceivedOverTime: xData.engagementReceivedOverTime,
+      };
+    }
+    return getAnalyticsKPIs();
+  }, [xData, xLoading]);
   const repliesThisWeek = kpis.repliesSentOverTime.reduce((a, b) => a + b, 0);
   const engagementGained = kpis.engagementReceivedOverTime.reduce((a, b) => a + b, 0);
 

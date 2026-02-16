@@ -8,6 +8,7 @@ import {
   getEngagementOverTime,
   getBestHoursHeatmap,
 } from '@/services/analyticsService';
+import { useXAnalytics } from '@/hooks/useXAnalytics';
 import { Card } from '@/components/ui/Card';
 import { PageContainer, PageHeader } from '@/components/ui/PageContainer';
 
@@ -15,12 +16,40 @@ const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function AnalyticsPage() {
   const [mounted, setMounted] = useState(false);
+  const { data: xData, loading: xLoading } = useXAnalytics();
   useEffect(() => setMounted(true), []);
 
-  const kpis = useMemo(() => (mounted ? getAnalyticsKPIs() : null), [mounted]);
-  const followersChart = useMemo(() => (mounted ? getFollowersChartData(30) : []), [mounted]);
-  const repliesChart = useMemo(() => (mounted ? getRepliesOverTime(14) : []), [mounted]);
-  const engagementChart = useMemo(() => (mounted ? getEngagementOverTime(14) : []), [mounted]);
+  const useReal = mounted && xData?.real && !xLoading;
+  const kpis = useMemo(() => {
+    if (useReal && xData) {
+      return {
+        followersGrowth: xData.followersGrowth,
+        followersCurrent: xData.followersCurrent,
+        repliesSentOverTime: xData.repliesSentOverTime,
+        engagementReceivedOverTime: xData.engagementReceivedOverTime,
+        replySuccessRate: xData.replySuccessRate,
+        bestPostingHours: xData.bestPostingHours,
+        topKeywords: xData.topKeywords?.length ? xData.topKeywords : [{ keyword: '—', count: 0, engagement: 0 }],
+      };
+    }
+    return mounted ? getAnalyticsKPIs() : null;
+  }, [mounted, useReal, xData]);
+  const followersChart = useMemo(() => {
+    if (useReal && xData?.followersChart?.length) return xData.followersChart;
+    return mounted ? getFollowersChartData(30) : [];
+  }, [mounted, useReal, xData]);
+  const repliesChart = useMemo(() => {
+    if (useReal && xData?.byDay14?.length) {
+      return xData.byDay14.map((d) => ({ date: d.date, count: d.replies }));
+    }
+    return mounted ? getRepliesOverTime(14) : [];
+  }, [mounted, useReal, xData]);
+  const engagementChart = useMemo(() => {
+    if (useReal && xData?.byDay14?.length) {
+      return xData.byDay14.map((d) => ({ date: d.date, count: d.engagement }));
+    }
+    return mounted ? getEngagementOverTime(14) : [];
+  }, [mounted, useReal, xData]);
   const heatmap = useMemo(() => (mounted ? getBestHoursHeatmap() : []), [mounted]);
 
   const maxFollowers = useMemo(() => Math.max(...followersChart.map((d) => d.followers), 1), [followersChart]);
@@ -42,7 +71,7 @@ export default function AnalyticsPage() {
     <PageContainer className="space-y-8">
       <PageHeader
         title="Analytics"
-        description="Your growth and engagement over time"
+        description={useReal ? 'Live data from your X account' : 'Your growth and engagement over time'}
       />
 
       {/* KPIs */}
