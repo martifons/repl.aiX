@@ -1,0 +1,33 @@
+PASOS PARA SUBIR EL PROYECTO A GITHUB
+======================================
+
+1. INSTALAR GIT (solo una vez)
+   - Entra en: https://git-scm.com/download/win
+   - Descarga "64-bit Git for Windows Setup"
+   - Instala (siguiente, siguiente, dejar opciones por defecto)
+   - Cierra y vuelve a abrir Cursor (o la terminal) despues de instalar
+
+2. EJECUTAR EL SCRIPT
+   - En Cursor: abre la terminal (Terminal -> Nueva terminal)
+   - Asegurate de estar en la carpeta del proyecto (xgrowthsaas)
+   - Escribe exactamente:
+
+     .\subir-a-github.ps1
+
+   - Pulsa Enter
+
+3. CUANDO PIDA "Pega la URL de tu repositorio"
+   - Ve a github.com, abre TU repositorio (el que creaste)
+   - Arriba veras un boton verde "Code"
+   - Clic en Code -> copia la URL (https://github.com/tu-usuario/replaix.git)
+   - Pega esa URL en la terminal y Enter
+
+4. SI PIDE USUARIO Y CONTRASEÑA
+   - Usuario: tu usuario de GitHub
+   - Contraseña: NO pongas tu contraseña de GitHub.
+     Tienes que usar un "Token":
+     - GitHub -> tu foto -> Settings -> Developer settings -> Personal access tokens
+     - Generate new token (classic) -> marca "repo" -> Generate
+     - Copia el token y cuando pida "Password" PEGALO (no se vera, es normal)
+
+Cuando termine, en la pagina de tu repo en GitHub veras todos los archivos del proyecto.
