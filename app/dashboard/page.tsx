@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getAnalyticsKPIs } from '@/services/analyticsService';
 import { useXAnalytics } from '@/hooks/useXAnalytics';
+import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 import { mockActivity } from '@/lib/mockActivity';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { Card, CardHeader } from '@/components/ui/Card';
@@ -29,6 +30,9 @@ export default function DashboardPage() {
   }, [xData, xLoading]);
   const repliesThisWeek = kpis.repliesSentOverTime.reduce((a, b) => a + b, 0);
   const engagementGained = kpis.engagementReceivedOverTime.reduce((a, b) => a + b, 0);
+  const { data: subscription, loading: subscriptionLoading } = useSubscriptionStatus(user?.email);
+  const hasPlan = subscription?.hasSubscription === true;
+  const showUpgradeBanner = !subscriptionLoading && !hasPlan;
 
   useEffect(() => {
     if (searchParams.get('payment') === 'success') {
@@ -47,6 +51,15 @@ export default function DashboardPage() {
           role="status"
         >
           Payment successful. Your plan is now active.
+        </div>
+      )}
+      {showUpgradeBanner && (
+        <div className="rounded-xl border-2 border-[#0057FF]/30 bg-[#0057FF]/5 px-4 py-4 text-center">
+          <p className="text-sm font-medium text-[#1A1A1A]">You&apos;re on the free view.</p>
+          <p className="mt-1 text-sm text-gray-600">Upgrade to unlock Tweets, Analytics and Top Performing.</p>
+          <Link href="/#pricing" className="mt-3 inline-block rounded-[12px] bg-[#0057FF] px-4 py-2.5 text-sm font-medium text-white shadow-[0_4px_16px_rgba(0,87,255,0.35)] hover:bg-[#0047dd] transition-colors">
+            View plans
+          </Link>
         </div>
       )}
       <PageHeader

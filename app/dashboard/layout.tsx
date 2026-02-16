@@ -5,11 +5,12 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SidebarItem } from '@/components/ui/SidebarItem';
 import { DashboardThemeProvider } from '@/context/DashboardThemeContext';
 
-const nav = [
+const navAll = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/dashboard/tweets', label: 'Tweets' },
   { href: '/dashboard/top-performing', label: 'Top Performing' },
@@ -17,10 +18,18 @@ const nav = [
   { href: '/dashboard/profile', label: 'Profile' },
 ];
 
+const navFree = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/dashboard/profile', label: 'Profile' },
+];
+
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { data: subscription } = useSubscriptionStatus(user?.email);
+  const hasPlan = subscription?.hasSubscription === true;
+  const nav = hasPlan ? navAll : navFree;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
   const planDropdownRef = useRef<HTMLDivElement>(null);

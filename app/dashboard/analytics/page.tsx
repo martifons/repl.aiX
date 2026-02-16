@@ -9,12 +9,13 @@ import {
   getBestHoursHeatmap,
 } from '@/services/analyticsService';
 import { useXAnalytics } from '@/hooks/useXAnalytics';
+import RequirePlan from '@/components/RequirePlan';
 import { Card } from '@/components/ui/Card';
 import { PageContainer, PageHeader } from '@/components/ui/PageContainer';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function AnalyticsPage() {
+function AnalyticsPageContent() {
   const [mounted, setMounted] = useState(false);
   const { data: xData, loading: xLoading } = useXAnalytics();
   useEffect(() => setMounted(true), []);
@@ -255,5 +256,13 @@ export default function AnalyticsPage() {
         </ul>
       </Card>
     </PageContainer>
+  );
+}
+
+export default function AnalyticsPage() {
+  return (
+    <RequirePlan>
+      <AnalyticsPageContent />
+    </RequirePlan>
   );
 }

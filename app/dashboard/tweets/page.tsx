@@ -7,6 +7,7 @@ import { getTweets } from '@/services/twitterService';
 import { generateReply, getSavedReply, recordPostReply } from '@/services/replyService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import RequirePlan from '@/components/RequirePlan';
 import { Card } from '@/components/ui/Card';
 import { PageContainer, PageHeader } from '@/components/ui/PageContainer';
 import { Button } from '@/components/ui/Button';
@@ -14,7 +15,7 @@ import { ReplyStudio } from '@/components/ReplyStudio';
 
 type ReplyState = Record<string, 'idle' | 'loading' | 'done'>;
 
-export default function TweetsPage() {
+function TweetsPageContent() {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [replyState, setReplyState] = useState<ReplyState>({});
   const [generatedReplies, setGeneratedReplies] = useState<Record<string, string>>({});
@@ -156,5 +157,13 @@ export default function TweetsPage() {
         ))}
       </div>
     </PageContainer>
+  );
+}
+
+export default function TweetsPage() {
+  return (
+    <RequirePlan>
+      <TweetsPageContent />
+    </RequirePlan>
   );
 }

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { TimeRange } from '@/types';
 import { getTopPerformingReplies } from '@/services/analyticsService';
 import { seedPerformedRepliesIfNeeded } from '@/lib/mockSeedData';
+import RequirePlan from '@/components/RequirePlan';
 import { Card } from '@/components/ui/Card';
 import { PageContainer, PageHeader } from '@/components/ui/PageContainer';
 import { ScrollReveal } from '@/components/ScrollReveal';
@@ -15,7 +16,7 @@ const TIME_RANGES: { value: TimeRange; label: string }[] = [
   { value: 'all', label: 'All time' },
 ];
 
-export default function TopPerformingPage() {
+function TopPerformingPageContent() {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const [mounted, setMounted] = useState(false);
 
@@ -107,5 +108,13 @@ export default function TopPerformingPage() {
         </div>
       )}
     </PageContainer>
+  );
+}
+
+export default function TopPerformingPage() {
+  return (
+    <RequirePlan>
+      <TopPerformingPageContent />
+    </RequirePlan>
   );
 }
