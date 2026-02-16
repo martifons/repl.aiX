@@ -26,7 +26,7 @@ function LoginContent() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'x',
       options: {
-        redirectTo: `${baseUrl.replace(/\/$/, '')}/auth/callback`,
+        redirectTo: `${baseUrl.replace(/\/$/, '')}/auth/callback?next=/dashboard`,
         scopes: 'tweet.read tweet.write users.read follows.read offline.access',
       },
     });
