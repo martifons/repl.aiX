@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState, useMemo } from 'react';
+import { Suspense, useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getAnalyticsKPIs } from '@/services/analyticsService';
@@ -12,7 +12,7 @@ import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { PageContainer, PageHeader } from '@/components/ui/PageContainer';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -149,5 +149,17 @@ export default function DashboardPage() {
         </Card>
       </div>
     </PageContainer>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <PageContainer>
+        <div className="h-64 animate-pulse rounded-xl bg-gray-100" />
+      </PageContainer>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }

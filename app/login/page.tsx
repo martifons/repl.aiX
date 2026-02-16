@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
-export default function LoginPage() {
+function LoginContent() {
   const { isLogged, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -88,5 +88,17 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F7F8FA] flex items-center justify-center">
+        <p className="text-[#333333]">Loading…</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
