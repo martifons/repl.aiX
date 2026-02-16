@@ -52,7 +52,10 @@ export default function ProfilePage() {
   };
 
   const handleManageSubscription = async () => {
-    if (!authUser?.email) return;
+    if (!authUser?.email) {
+      setPortalError('Add an email to your X account to manage subscription.');
+      return;
+    }
     setPortalLoading(true);
     setPortalError(null);
     try {
@@ -83,7 +86,7 @@ export default function ProfilePage() {
             <div className="mt-4 sm:mt-0 sm:pb-1">
               <h2 className="text-xl font-semibold tracking-tight text-gray-900">{display.name}</h2>
               <p className="text-gray-600">{display.username}</p>
-              <p className="mt-0.5 text-sm text-gray-500">{display.email}</p>
+              <p className="mt-0.5 text-sm text-gray-500">{display.email || '—'}</p>
               <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                 <span className="font-medium text-gray-700">
                   {display.followers?.toLocaleString() ?? '—'} followers
@@ -147,23 +150,29 @@ export default function ProfilePage() {
         </div>
         {subscription?.hasSubscription && (
           <div className="mt-4">
-            <button
-              type="button"
-              onClick={handleManageSubscription}
-              disabled={portalLoading}
-              className="rounded-[12px] border-2 border-[#0057FF] bg-white px-4 py-2.5 text-sm font-medium text-[#0057FF] transition-all duration-200 hover:bg-[#0057FF]/10 active:scale-[0.98] disabled:opacity-70"
-            >
-              {portalLoading ? (
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Opening…
-                </span>
-              ) : (
-                'Manage subscription'
-              )}
-            </button>
-            {portalError && (
-              <p className="mt-2 text-sm text-red-600" role="alert">{portalError}</p>
+            {authUser?.email ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                  className="rounded-[12px] border-2 border-[#0057FF] bg-white px-4 py-2.5 text-sm font-medium text-[#0057FF] transition-all duration-200 hover:bg-[#0057FF]/10 active:scale-[0.98] disabled:opacity-70"
+                >
+                  {portalLoading ? (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Opening…
+                    </span>
+                  ) : (
+                    'Manage subscription'
+                  )}
+                </button>
+                {portalError && (
+                  <p className="mt-2 text-sm text-red-600" role="alert">{portalError}</p>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-gray-600">Add an email to your X account to manage subscription here.</p>
             )}
           </div>
         )}

@@ -20,7 +20,10 @@ export function PricingCTA({ plan, variant = 'secondary', className = '', childr
   const [error, setError] = useState<string | null>(null);
 
   const handleSubscribe = async () => {
-    if (!user?.email) return;
+    if (!user?.email) {
+      setError('Add an email to your X account to subscribe, or enter it at checkout.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -53,23 +56,27 @@ export function PricingCTA({ plan, variant = 'secondary', className = '', childr
     );
   }
 
+  const hasEmail = !!user?.email;
+
   return (
     <div className="mt-8">
       <button
         type="button"
         onClick={handleSubscribe}
-        disabled={loading}
+        disabled={loading || !hasEmail}
         className={`${baseClass} ${
           isPrimary
             ? 'bg-[#0057FF] text-white shadow-[0_4px_16px_rgba(0,87,255,0.35)] hover:bg-[#0047dd] hover:translate-y-[-2px] hover:shadow-[0_6px_24px_rgba(0,87,255,0.4)] active:scale-[0.98]'
             : 'border-2 border-gray-300 text-[#333333] hover:border-[#0057FF] hover:bg-[#0057FF]/5 hover:text-[#0057FF] hover:translate-y-[-2px] hover:shadow-[0_4px_16px_rgba(0,87,255,0.2)] active:scale-[0.98]'
-        } ${className}`}
+        } ${!hasEmail ? 'opacity-70 cursor-not-allowed' : ''} ${className}`}
       >
         {loading ? (
           <span className="inline-flex items-center gap-2">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             Redirecting to checkout…
           </span>
+        ) : !hasEmail ? (
+          'Add email in X to subscribe'
         ) : (
           children ?? 'Subscribe'
         )}

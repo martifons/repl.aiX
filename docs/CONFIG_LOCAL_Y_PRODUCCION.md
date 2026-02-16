@@ -26,11 +26,13 @@ Después de añadir o cambiar variables, haz **Redeploy** del último deployment
 
 1. **Supabase:** Añade la URL de tu app en local a las permitidas.
    - Supabase Dashboard → **Authentication** → **URL Configuration**.
-   - En **Redirect URLs** agrega: `http://localhost:3000/auth/callback` (o `http://127.0.0.1:3000/auth/callback` si usas esa).
-   - Guarda.
+   - En **Redirect URLs** agrega: `http://localhost:3000/auth/callback` (y si usas 127.0.0.1: `http://127.0.0.1:3000/auth/callback`).
+   - Pulsa **Save**.
 
-2. En la terminal: `npm run dev`.
+2. **Variables:** En `.env.local` ten `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` (mismo proyecto que en producción).
 
-3. Abre `http://localhost:3000/login` y pulsa **Sign in with X**.
+3. En la terminal: `npm run dev`.
 
-La callback en X (Developer Console) sigue siendo la de Supabase; no hace falta añadir localhost ahí. Solo hay que permitir en Supabase que redirija a `localhost` después del login.
+4. Abre `http://localhost:3000/login` y pulsa **Sign in with X**.
+
+La callback en X (Developer Console) sigue siendo la de Supabase; no hace falta añadir localhost ahí.
