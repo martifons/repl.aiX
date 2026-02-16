@@ -23,15 +23,15 @@ export default function ProfilePage() {
   }, []);
 
   const fullProfile = useMemo(() => {
-    if (!mounted) return null;
-    return getUserProfile();
-  }, [mounted]);
+    if (!mounted || !authUser) return null;
+    return getUserProfile(authUser);
+  }, [mounted, authUser]);
 
   useEffect(() => {
     setProfile(fullProfile);
   }, [fullProfile]);
 
-  const growthMessage = useMemo(() => (mounted ? getGrowthSummaryMessage() : ''), [mounted]);
+  const growthMessage = useMemo(() => (mounted && authUser ? getGrowthSummaryMessage(authUser) : ''), [mounted, authUser]);
   const pct = profile ? Math.round((profile.repliesUsedToday / profile.repliesLimit) * 100) : 0;
 
   if (!authUser) return null;

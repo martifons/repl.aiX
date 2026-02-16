@@ -1,0 +1,19 @@
+---
+description: Subir cambios a la web (Git push) después de editar código
+alwaysApply: true
+---
+
+# Deploy automático tras cambios
+
+Cuando hagas cambios en el código del proyecto (editar, crear o borrar archivos) y el usuario haya pedido que los cambios se vean en la web:
+
+1. Al terminar de aplicar los cambios, ejecuta en la raíz del proyecto:
+   - `git add .`
+   - `git commit -m "Breve descripción del cambio"`
+   - `git push`
+
+2. Usa mensajes de commit claros y en español (ej.: "Auth con X: login y callback", "Ajuste límites en dashboard").
+
+3. Si `git status` indica que no hay cambios, no hagas commit ni push.
+
+4. Si `git push` falla (ej. conflicto o no autorizado), informa al usuario y no repitas el push sin que lo pida.

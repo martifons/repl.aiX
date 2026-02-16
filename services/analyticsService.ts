@@ -14,7 +14,7 @@ import type {
 } from '@/types';
 import { getPerformedRepliesList } from '@/lib/mockStore';
 import { seedPerformedRepliesIfNeeded } from '@/lib/mockSeedData';
-import { getUser } from '@/lib/mockUser';
+import type { AppUser } from '@/context/AuthContext';
 
 // Deterministic but varied data based on "time"
 function seeded(seed: number, max: number) {
@@ -103,8 +103,7 @@ export function getBestHoursHeatmap(): HeatmapCell[] {
   return cells;
 }
 
-export function getUserProfile(): UserProfile | null {
-  const user = getUser();
+export function getUserProfile(user: AppUser | null): UserProfile | null {
   if (!user) return null;
   if (typeof window !== 'undefined') seedPerformedRepliesIfNeeded();
   const performed = getPerformedRepliesList();
@@ -121,8 +120,8 @@ export function getUserProfile(): UserProfile | null {
   };
 }
 
-export function getGrowthSummaryMessage(): string {
-  const profile = getUserProfile();
+export function getGrowthSummaryMessage(user: AppUser | null): string {
+  const profile = getUserProfile(user);
   if (!profile) return 'Keep going!';
   const { totalEngagementReceived } = profile;
   return `Your replies generated ${totalEngagementReceived.toLocaleString()} engagements this month. Keep going!`;

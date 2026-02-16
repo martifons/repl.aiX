@@ -5,7 +5,6 @@ import Image from 'next/image';
 import type { Tweet } from '@/types';
 import { getTweets } from '@/services/twitterService';
 import { generateReply, getSavedReply, recordPostReply } from '@/services/replyService';
-import { updateUsage, getUser } from '@/lib/mockUser';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { Card } from '@/components/ui/Card';
@@ -19,7 +18,7 @@ export default function TweetsPage() {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [replyState, setReplyState] = useState<ReplyState>({});
   const [generatedReplies, setGeneratedReplies] = useState<Record<string, string>>({});
-  const { refreshUser } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -41,7 +40,6 @@ export default function TweetsPage() {
 
   const handleGenerateReply = useCallback(
     async (tweet: Tweet) => {
-      const user = getUser();
       if (user && user.repliesUsedToday >= user.repliesLimit) {
         showToast('Daily reply limit reached. Upgrade for more.', 'info');
         return;
@@ -56,11 +54,10 @@ export default function TweetsPage() {
       const reply = await generateReply(tweet.text, tweet.id);
       setGeneratedReplies((r) => ({ ...r, [tweet.id]: reply }));
       setReplyState((s) => ({ ...s, [tweet.id]: 'done' }));
-      updateUsage();
       refreshUser();
       showToast('Reply generated');
     },
-    [showToast, refreshUser]
+    [user, showToast, refreshUser]
   );
 
   const getInitialVersions = useCallback((tweetId: string) => {

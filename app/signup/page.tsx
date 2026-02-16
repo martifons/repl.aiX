@@ -1,32 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { setUser, createUser } from '@/lib/mockUser';
+import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const { isLogged, isLoading } = useAuth();
   const router = useRouter();
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    const user = createUser({
-      name: name || 'User',
-      username: username ? (username.startsWith('@') ? username : `@${username}`) : '@user',
-      email: email || 'user@example.com',
+  useEffect(() => {
+    if (!isLoading && isLogged) {
+      router.replace('/dashboard');
+    }
+  }, [isLoading, isLogged, router]);
+
+  const handleSignInWithX = async () => {
+    const supabase = createClient();
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'twitter',
+      options: {
+        redirectTo: `${origin}/auth/callback?next=/dashboard`,
+        scopes: 'tweet.read tweet.write users.read follows.read offline.access',
+      },
     });
-    setUser(user);
-    login();
-    router.replace('/dashboard');
+    if (error) {
+      console.error('OAuth error:', error);
+      return;
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F7F8FA] flex items-center justify-center">
+        <p className="text-[#333333]">Loading…</p>
+      </div>
+    );
+  }
+
+  if (isLogged) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] flex items-center justify-center px-4 py-12">
@@ -36,67 +54,21 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="mt-1.5 text-sm text-gray-500">
-            Start growing on X with repl.aiX
+            Sign in with X to start using repl.aiX
           </p>
-          <form onSubmit={handleSignup} className="mt-8 space-y-5">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="input-premium mt-1.5 w-full rounded-[12px] border-2 border-gray-200 bg-[#F7F8FA] px-4 py-2.5 text-[#1A1A1A] placeholder-gray-400 transition-all duration-300"
-                placeholder="Martí"
-              />
-            </div>
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                X username
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="input-premium mt-1.5 w-full rounded-[12px] border-2 border-gray-200 bg-[#F7F8FA] px-4 py-2.5 text-[#1A1A1A] placeholder-gray-400 transition-all duration-300"
-                placeholder="@martifons"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-premium mt-1.5 w-full rounded-[12px] border-2 border-gray-200 bg-[#F7F8FA] px-4 py-2.5 text-[#1A1A1A] placeholder-gray-400 transition-all duration-300"
-                placeholder="you@example.com"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input-premium mt-1.5 w-full rounded-[12px] border-2 border-gray-200 bg-[#F7F8FA] px-4 py-2.5 text-[#1A1A1A] placeholder-gray-400 transition-all duration-300"
-                placeholder="••••••••"
-              />
-            </div>
-            <Button type="submit" variant="primary" size="lg" className="w-full hover:translate-y-[-2px] hover:shadow-[0_6px_24px_rgba(0,87,255,0.35)]">
-              Create account
+          <div className="mt-8">
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              className="w-full hover:translate-y-[-2px] hover:shadow-[0_6px_24px_rgba(0,87,255,0.35)]"
+              onClick={handleSignInWithX}
+            >
+              Sign in with X
             </Button>
-          </form>
+          </div>
           <p className="mt-6 text-center text-xs text-gray-500">
-            Demo: no real signup. User is stored in your browser.
+            One click with your X account. We’ll use it to show your timeline and post replies (only when you approve).
           </p>
           <p className="mt-4 text-center text-sm text-gray-600">
             Already have an account?{' '}
