@@ -18,11 +18,11 @@ export async function fetchSubscriptionStatus(
   return res.json();
 }
 
-export async function createCheckoutSession(plan: string, userEmail: string): Promise<{ url: string }> {
+export async function createCheckoutSession(plan: string, userEmail?: string): Promise<{ url: string }> {
   const res = await fetch('/api/subscription/create-checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ plan, userEmail }),
+    body: JSON.stringify({ plan, userEmail: userEmail ?? '' }),
   });
   const data = await res.json();
   if (!res.ok) {

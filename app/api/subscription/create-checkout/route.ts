@@ -9,16 +9,9 @@ const validPlanSlugs = ['Starter', 'Growth', 'Pro'] as const;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const userEmail = body.userEmail ?? body.email;
+    const userEmail = typeof body.userEmail === 'string' ? body.userEmail.trim() : typeof body.email === 'string' ? body.email.trim() : '';
     const planFromBody = (body.plan as string)?.trim();
     const planPriceIdFromBody = (body.planPriceId as string)?.trim();
-
-    if (!userEmail || typeof userEmail !== 'string') {
-      return NextResponse.json(
-        { error: 'userEmail is required' },
-        { status: 400 }
-      );
-    }
 
     const stripe = getStripe();
     let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[];
@@ -58,14 +51,14 @@ export async function POST(req: NextRequest) {
 
     const params: Stripe.Checkout.SessionCreateParams = {
       mode: 'subscription',
-      customer_email: userEmail,
+      ...(userEmail ? { customer_email: userEmail } : {}),
       line_items: lineItems,
       allow_promotion_codes: true,
       subscription_data: {
         trial_period_days: trialPeriodDays,
         metadata: { plan: String(plan) },
       },
-      metadata: { plan: String(plan), userEmail },
+      metadata: { plan: String(plan), ...(userEmail ? { userEmail } : {}) },
       success_url: `${frontendUrl}/dashboard?payment=success`,
       cancel_url: `${frontendUrl}/#pricing?payment=canceled`,
     };
