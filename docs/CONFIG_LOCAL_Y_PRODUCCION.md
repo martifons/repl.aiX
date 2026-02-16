@@ -17,6 +17,7 @@ En Vercel → proyecto → **Settings** → **Environment Variables** añade:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **`NEXT_PUBLIC_APP_URL`** = `https://replaixai.com` (o tu dominio con https, sin barra final). Así el login con X redirige siempre a tu web y no a localhost.
 
 Después de añadir o cambiar variables, haz **Redeploy** del último deployment.
 

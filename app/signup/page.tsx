@@ -20,11 +20,11 @@ export default function SignupPage() {
 
   const handleSignInWithX = async () => {
     const supabase = createClient();
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'x',
       options: {
-        redirectTo: `${origin}/auth/callback?next=/dashboard`,
+        redirectTo: `${baseUrl.replace(/\/$/, '')}/auth/callback?next=/dashboard`,
         scopes: 'tweet.read tweet.write users.read follows.read offline.access',
       },
     });
