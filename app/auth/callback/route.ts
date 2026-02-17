@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 import { X_TOKEN_COOKIE } from '@/lib/xAuth';
+
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 export async function GET(request: Request) {
@@ -21,9 +23,26 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error && data.session) {
+      const token = data.session.provider_token;
+      const userId = data.session.user?.id;
+
+      if (token && userId) {
+        const admin = createAdminClient();
+        if (admin) {
+          try {
+            await admin.from('user_x_tokens').upsert(
+              { user_id: userId, x_access_token: token, updated_at: new Date().toISOString() },
+              { onConflict: 'user_id' }
+            );
+          } catch (_) {
+            // Table may not exist yet; cookie/cookie still used
+          }
+        }
+      }
+
       const response = NextResponse.redirect(`${base}${next}`);
-      if (data.session.provider_token) {
-        response.cookies.set(X_TOKEN_COOKIE, data.session.provider_token, {
+      if (token) {
+        response.cookies.set(X_TOKEN_COOKIE, token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',

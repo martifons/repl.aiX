@@ -19,10 +19,14 @@ export async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
-    const headerToken = request.headers.get('x-provider-token')?.trim();
-    const cookieStore = await cookies();
-    const cookieToken = cookieStore.get(X_TOKEN_COOKIE)?.value?.trim();
-    const token = session?.provider_token || headerToken || cookieToken || undefined;
+    let token = session?.provider_token
+      || request.headers.get('x-provider-token')?.trim()
+      || (await cookies()).get(X_TOKEN_COOKIE)?.value?.trim()
+      || undefined;
+    if (!token && session?.user?.id) {
+      const { data: row } = await supabase.from('user_x_tokens').select('x_access_token').eq('user_id', session.user.id).single();
+      if (row?.x_access_token) token = row.x_access_token;
+    }
     if (!token) {
       return NextResponse.json({ error: 'Not authenticated with X' }, { status: 401 });
     }

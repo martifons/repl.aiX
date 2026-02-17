@@ -13,10 +13,14 @@ import { Card, CardHeader } from '@/components/ui/Card';
 import { PageContainer, PageHeader } from '@/components/ui/PageContainer';
 
 function DashboardContent() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const searchParams = useSearchParams();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const { data: xData, loading: xLoading } = useXAnalytics();
+  const { data: xData, loading: xLoading, refetch: refetchX } = useXAnalytics();
+
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
   const kpis = useMemo(() => {
     if (xData?.real && !xLoading) {
       return {
@@ -54,6 +58,14 @@ function DashboardContent() {
       .finally(() => { if (!cancelled) setActivityLoading(false); });
     return () => { cancelled = true; };
   }, [user?.providerToken]);
+
+  useEffect(() => {
+    if (!xLoading && user && !xData?.real && xData === null) {
+      const t = setTimeout(() => refetchX(), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [user, xLoading, xData, refetchX]);
+
   const displayActivity = activities.length > 0 ? activities : mockActivity;
   const isDev = process.env.NODE_ENV === 'development';
   const hasPlan = subscription?.hasSubscription === true || isDev;

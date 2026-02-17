@@ -1,6 +1,17 @@
 # Configuración de X (Twitter) para analytics y perfil
 
-Para que el Dashboard, Analytics, Perfil y Tweets muestren **datos reales** de X:
+Para que el Dashboard, Analytics, Perfil y Tweets muestren **datos reales** de X.
+
+## 0. Tabla en Supabase y clave de servicio (importante)
+
+1. En **Supabase Dashboard → SQL Editor**, ejecuta el contenido de:
+   `supabase/migrations/20250117000000_user_x_tokens.sql`
+   (crea la tabla `user_x_tokens` para guardar el token de X y usarlo en las APIs).
+
+2. Añade la variable de entorno **SUPABASE_SERVICE_ROLE_KEY**:
+   - En Supabase: **Project Settings → API** → copia la clave **service_role** (no la anon).
+   - En **Vercel** (y en `.env.local` para local): `SUPABASE_SERVICE_ROLE_KEY=eyJ...`
+   Así el callback puede guardar el token de X en la base de datos y las APIs pueden usarlo aunque la cookie falle.
 
 ## 1. Supabase Dashboard
 
