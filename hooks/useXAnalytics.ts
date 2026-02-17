@@ -35,16 +35,20 @@ export function useXAnalytics() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refetch = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const refetch = useCallback(async (isRetry = false) => {
+    if (!isRetry) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const headers: HeadersInit = {};
-      if (user?.providerToken) {
-        headers['x-provider-token'] = user.providerToken;
-      }
+      if (user?.providerToken) headers['x-provider-token'] = user.providerToken;
       const res = await fetch('/api/x/analytics', { headers, credentials: 'include' });
       if (!res.ok) {
+        if (res.status === 401 && !isRetry) {
+          await new Promise((r) => setTimeout(r, 1200));
+          return refetch(true);
+        }
         if (res.status === 401) {
           setData(null);
           return;
@@ -62,7 +66,7 @@ export function useXAnalytics() {
   }, [user?.providerToken]);
 
   useEffect(() => {
-    refetch();
+    refetch(false);
   }, [refetch]);
 
   return { data, loading, error, refetch };
@@ -87,14 +91,20 @@ export function useXMe() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refetch = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const refetch = useCallback(async (isRetry = false) => {
+    if (!isRetry) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const headers: HeadersInit = {};
       if (user?.providerToken) headers['x-provider-token'] = user.providerToken;
       const res = await fetch('/api/x/me', { headers, credentials: 'include' });
       if (!res.ok) {
+        if (res.status === 401 && !isRetry) {
+          await new Promise((r) => setTimeout(r, 1200));
+          return refetch(true);
+        }
         if (res.status === 401) {
           setData(null);
           return;
@@ -112,7 +122,7 @@ export function useXMe() {
   }, [user?.providerToken]);
 
   useEffect(() => {
-    refetch();
+    refetch(false);
   }, [refetch]);
 
   return { data, loading, error, refetch };

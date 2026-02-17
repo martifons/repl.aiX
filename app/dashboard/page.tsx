@@ -101,7 +101,7 @@ function DashboardContent() {
       )}
       <PageHeader
         title="Dashboard"
-        description={`Welcome back, ${user?.name ?? 'User'}`}
+        description={useReal ? `Welcome back, ${user?.name ?? 'User'} · Live from X` : `Welcome back, ${user?.name ?? 'User'}`}
       />
 
       {/* Stats */}
