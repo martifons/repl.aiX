@@ -57,4 +57,9 @@ La API de tweets (`GET /2/users/:id/tweets`) devuelve **403** si la app no tiene
 
 ### Si ves `tweetsError: 402` (Payment Required)
 
-X (Twitter) exige una **suscripción de pago** para el endpoint que lee el timeline de tweets (`GET /2/users/:id/tweets`). El plan gratuito de X API no incluye este acceso. Para tener respuestas, engagement y actividad real necesitas contratar **X API Basic** (aprox. 200 USD/mes) o superior en [developer.x.com → Products & pricing](https://developer.x.com/en/portal/products). No es un fallo de configuración de tu app.
+X (Twitter) exige **acceso de pago** para el endpoint que lee el timeline de tweets (`GET /2/users/:id/tweets`). El plan gratuito no incluye este acceso. Opciones:
+
+- **Pay-per-use (si está disponible en tu cuenta):** la que más suele rentar para solo probar: añades pocos dólares en créditos en developer.x.com y haces unas cargas; puede salir por muy poco.
+- **Basic (antiguo):** ~200 USD/mes fijo si no ves pay-per-use.
+
+Guía detallada con pasos y enlaces: **[docs/X_API_PRECIOS_Y_PROBAR.md](X_API_PRECIOS_Y_PROBAR.md)**. Resumen: entra en [developer.x.com → Products](https://developer.x.com/en/portal/products), revisa si hay "Pay-per-use" o "Credits", añade el mínimo para probar y vuelve a comprobar `/api/x/debug` hasta que `tweetsApiOk` sea `true`.
