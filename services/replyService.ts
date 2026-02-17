@@ -33,9 +33,20 @@ const REPLY_POOL_QUESTION = [
 ];
 
 export async function generateReply(tweetText: string, _tweetId?: string): Promise<string> {
-  // TODO: call real API e.g. POST /api/generateReply
-  await new Promise((r) => setTimeout(r, 800 + Math.random() * 600));
-  return generateFakeReply(tweetText);
+  try {
+    const res = await fetch('/api/generateReply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tweet: tweetText, content: tweetText }),
+    });
+    const data = await res.json().catch(() => ({}));
+    const reply = (data as { reply?: string }).reply;
+    if (reply && typeof reply === 'string') return reply.slice(0, 280);
+  } catch (_) {
+    // Fallback to fake
+  }
+  await new Promise((r) => setTimeout(r, 400));
+  return generateFakeReply(tweetText).slice(0, 280);
 }
 
 export async function improveTone(text: string): Promise<string> {
@@ -83,11 +94,12 @@ export function getReplyVersions(tweetId: string): ReplyVersion[] {
 export function recordPostReply(
   tweetId: string,
   tweet: Tweet,
-  replyText: string
+  replyText: string,
+  realMetrics?: { likesReceived: number; repliesReceived: number; retweetsReceived: number }
 ) {
-  const likes = Math.floor(3 + Math.random() * 35);
-  const replies = Math.floor(Math.random() * 8);
-  const retweets = Math.floor(Math.random() * 6);
+  const likes = realMetrics?.likesReceived ?? Math.floor(3 + Math.random() * 35);
+  const replies = realMetrics?.repliesReceived ?? Math.floor(Math.random() * 8);
+  const retweets = realMetrics?.retweetsReceived ?? Math.floor(Math.random() * 6);
   return addPerformedReply({
     tweetId,
     tweet,

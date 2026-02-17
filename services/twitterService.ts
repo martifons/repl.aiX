@@ -1,13 +1,36 @@
 /**
  * Twitter / X API layer.
- * Currently returns mock data. Replace with real X API calls when ready.
+ * Uses real /api/x/feed and /api/x/post-reply when available.
  */
 
 import type { Tweet } from '@/types';
 import { mockTweets } from '@/lib/mockTweets';
 
 export async function getTweets(_query?: string): Promise<Tweet[]> {
-  // TODO: replace with real API e.g. GET /api/twitter/search?q=...
+  try {
+    const res = await fetch('/api/x/feed', { credentials: 'include' });
+    if (!res.ok) throw new Error(String(res.status));
+    const data = await res.json();
+    const tweets = data.tweets || [];
+    if (tweets.length > 0) {
+      return tweets.map((t: Record<string, unknown>) => ({
+        id: t.id,
+        author: t.author,
+        username: t.username,
+        avatar: t.avatar || '',
+        followers: Number(t.followers) || 0,
+        text: t.text,
+        likes: Number(t.likes) || 0,
+        replies: Number(t.replies) || 0,
+        retweets: Number(t.retweets) || 0,
+        timestamp: t.timestamp || '',
+        createdAt: t.createdAt,
+        url: typeof t.url === 'string' ? t.url : undefined,
+      })) as Tweet[];
+    }
+  } catch (_) {
+    // Fallback to mock
+  }
   const withDates = mockTweets.map((t, i) => ({
     ...t,
     createdAt: getCreatedAtForTweet(i),
@@ -21,14 +44,24 @@ function getCreatedAtForTweet(index: number): string {
   return d.toISOString();
 }
 
-export async function postReply(_tweetId: string, _replyText: string): Promise<{ success: boolean }> {
-  // TODO: replace with real X API POST reply
-  await new Promise((r) => setTimeout(r, 800));
-  return { success: true };
+export async function postReply(tweetId: string, replyText: string): Promise<{ success: boolean; tweetId?: string }> {
+  try {
+    const res = await fetch('/api/x/post-reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ text: replyText, inReplyToTweetId: tweetId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || String(res.status));
+    return { success: true, tweetId: data.tweetId };
+  } catch (e) {
+    console.error('postReply error:', e);
+    return { success: false };
+  }
 }
 
 export async function getTweetById(_tweetId: string): Promise<Tweet | null> {
-  // TODO: replace with real API
   const tweets = await getTweets();
-  return tweets[0] ?? null;
+  return tweets.find((t) => t.id === _tweetId) ?? null;
 }

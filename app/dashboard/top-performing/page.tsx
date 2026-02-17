@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import type { TimeRange } from '@/types';
+import type { TimeRange, PerformedReply, Tweet } from '@/types';
 import { getTopPerformingReplies } from '@/services/analyticsService';
 import { seedPerformedRepliesIfNeeded } from '@/lib/mockSeedData';
 import RequirePlan from '@/components/RequirePlan';
@@ -19,16 +19,72 @@ const TIME_RANGES: { value: TimeRange; label: string }[] = [
 function TopPerformingPageContent() {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const [mounted, setMounted] = useState(false);
+  const [realItems, setRealItems] = useState<PerformedReply[] | null>(null);
 
   useEffect(() => {
     seedPerformedRepliesIfNeeded();
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/x/top-performing', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : { items: [] }))
+      .then((data) => {
+        if (cancelled) return;
+        const items = data.items || [];
+        if (items.length > 0) {
+          const mapped: PerformedReply[] = items.map((it: {
+            id: string;
+            replyText: string;
+            replyId: string;
+            postedAt: string;
+            likesReceived: number;
+            repliesReceived: number;
+            retweetsReceived: number;
+            engagementScore: number;
+            originalTweet?: { id?: string; text?: string; author?: string; username?: string; avatar?: string };
+          }) => {
+            const ot = it.originalTweet || {};
+            const tweet: Tweet = {
+              id: ot.id || it.replyId,
+              author: ot.author || 'Unknown',
+              username: ot.username || '@user',
+              avatar: ot.avatar || '',
+              followers: 0,
+              text: ot.text || '',
+              likes: 0,
+              replies: 0,
+              retweets: 0,
+              timestamp: '',
+              url: ot.id ? `https://x.com/i/status/${ot.id}` : undefined,
+            };
+            return {
+              id: it.id,
+              tweetId: it.replyId,
+              tweet,
+              replyText: it.replyText,
+              postedAt: it.postedAt,
+              likesReceived: it.likesReceived,
+              repliesReceived: it.repliesReceived,
+              retweetsReceived: it.retweetsReceived,
+              engagementScore: it.engagementScore,
+            };
+          });
+          setRealItems(mapped);
+        } else {
+          setRealItems([]);
+        }
+      })
+      .catch(() => { if (!cancelled) setRealItems([]); });
+    return () => { cancelled = true; };
+  }, []);
+
   const list = useMemo(() => {
     if (!mounted) return [];
+    if (realItems !== null) return realItems;
     return getTopPerformingReplies(timeRange);
-  }, [timeRange, mounted]);
+  }, [timeRange, mounted, realItems]);
 
   return (
     <PageContainer className="space-y-6">
@@ -77,15 +133,20 @@ function TopPerformingPageContent() {
                   <div className="mt-2 rounded-lg border border-gray-100 bg-gray-50/50 p-3">
                     <p className="text-xs font-medium text-gray-500">Original tweet</p>
                     <p className="mt-0.5 text-sm text-gray-900">{item.tweet.text}</p>
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
                       <Image
-                        src={item.tweet.avatar}
+                        src={item.tweet.avatar || 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png'}
                         alt=""
                         width={20}
                         height={20}
                         className="rounded-full"
                       />
                       <span className="text-xs text-gray-600">{item.tweet.author} {item.tweet.username}</span>
+                      {item.tweet.url && (
+                        <a href={item.tweet.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#0057FF] hover:underline">
+                          View on X →
+                        </a>
+                      )}
                     </div>
                   </div>
                   <div className="mt-3 rounded-lg border border-[#0057FF]/20 bg-[#0057FF]/5 p-3">

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { Tweet } from '@/types';
 import { getTweets } from '@/services/twitterService';
 import { generateReply, getSavedReply, recordPostReply } from '@/services/replyService';
+import { postReply } from '@/services/twitterService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import RequirePlan from '@/components/RequirePlan';
@@ -75,9 +76,14 @@ function TweetsPageContent() {
   );
 
   const handlePosted = useCallback(
-    (tweet: Tweet) => (text: string) => {
+    (tweet: Tweet) => async (text: string) => {
+      const result = await postReply(tweet.id, text);
       recordPostReply(tweet.id, tweet, text);
-      showToast('Reply posted to X (simulated)');
+      if (result.success) {
+        showToast('Reply posted to X');
+      } else {
+        showToast('Could not post to X. Check permissions (tweet.write).', 'error');
+      }
       refreshUser();
     },
     [showToast, refreshUser]
@@ -113,6 +119,11 @@ function TweetsPageContent() {
                   <span className="font-semibold text-gray-900">{tweet.author}</span>
                   <span className="text-sm text-gray-500">{tweet.username}</span>
                   <span className="text-sm text-gray-400">· {tweet.timestamp}</span>
+                  {tweet.url && (
+                    <a href={tweet.url} target="_blank" rel="noopener noreferrer" className="text-sm text-[#0057FF] hover:underline ml-auto">
+                      View on X →
+                    </a>
+                  )}
                 </div>
                 <p className="mt-0.5 text-sm text-gray-500">{tweet.followers.toLocaleString()} followers</p>
                 <p className="mt-2 text-gray-900 leading-snug">{tweet.text}</p>

@@ -12,6 +12,8 @@ export interface Tweet {
   retweets: number;
   timestamp: string;
   createdAt?: string; // ISO date for filtering
+  /** Link to tweet on X (e.g. https://x.com/i/status/:id) */
+  url?: string;
 }
 
 export interface ReplyVersion {
