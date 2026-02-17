@@ -23,7 +23,7 @@ Para que el Dashboard, Analytics, Perfil y Tweets muestren **datos reales** de X
 
 - **App type**: la app debe ser tipo “OAuth 2.0” (no solo “App-only”).
 - **User authentication settings**:
-  - **App permissions**: al menos **Read** (y **Read and write** si quieres publicar).
+  - **App permissions**: **Read and write** (necesario para que la API de tweets devuelva datos; solo "Read" suele dar 403 en `/users/:id/tweets`).
   - **Type of App**: “Web App”.
   - **Callback URL**: la de Supabase (`https://<tu-proyecto>.supabase.co/auth/v1/callback`).
   - **Website URL**: tu sitio (ej. `https://replaixai.com`).
@@ -44,3 +44,13 @@ Si tras configurar bien sigues viendo ceros o “Not authenticated”:
 - Cierra sesión, vuelve a entrar con X y recarga el Dashboard.
 - Revisa en el navegador (DevTools → Application → Cookies) que exista la cookie `replaix_x_token` tras el login.
 - En el X Developer Portal, confirma que la app no esté en modo “Read-only” restringido ni con permisos insuficientes.
+
+### Si los seguidores salen bien pero respuestas/engagement/actividad en 0
+
+La API de tweets (`GET /2/users/:id/tweets`) devuelve **403** si la app no tiene permiso para leer tweets. Solución:
+
+1. En **developer.x.com** → tu proyecto → tu app → **User authentication settings**.
+2. En **App permissions** elige **Read and write** (no solo “Read”).
+3. Guarda. **Cierra sesión** en repl.aiX y vuelve a **iniciar sesión con X** (así el token incluye el nuevo scope).
+4. Abre de nuevo el Dashboard; las respuestas, el engagement y la actividad reciente deberían cargarse.
+5. Para comprobar: abre `/api/x/debug`; si `tweetsApiOk` es `true`, ya está bien.

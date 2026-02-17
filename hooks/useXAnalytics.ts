@@ -19,6 +19,8 @@ export interface XAnalyticsData {
   topKeywords: { keyword: string; count: number; engagement: number }[];
   byDay14: { date: string; replies: number; engagement: number }[];
   followersChart: { date: string; followers: number }[];
+  /** Si la API de tweets devolvió error (ej. 403 = falta permiso tweet.read) */
+  tweetsError?: number;
 }
 
 export interface XActivityItem {

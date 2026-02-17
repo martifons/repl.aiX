@@ -4,7 +4,7 @@ import { getXToken } from '@/lib/getXTokenServer';
 
 const X_API_BASE = 'https://api.twitter.com/2';
 
-function emptyAnalyticsPayload(followersCurrent: number) {
+function emptyAnalyticsPayload(followersCurrent: number, tweetsError?: number) {
   const now = new Date();
   const byDay14 = Array.from({ length: 14 }, (_, i) => {
     const d = new Date(now);
@@ -31,6 +31,7 @@ function emptyAnalyticsPayload(followersCurrent: number) {
     topKeywords: [] as { keyword: string; count: number; engagement: number }[],
     byDay14,
     followersChart,
+    tweetsError,
   };
 }
 
@@ -64,6 +65,7 @@ export async function GET(request: Request) {
     let totalEngagement = 0;
     const now = new Date();
     const authHeader = { Authorization: `Bearer ${token}` };
+    let tweetsError: number | undefined;
 
     try {
       let nextToken: string | null = null;
@@ -76,7 +78,10 @@ export async function GET(request: Request) {
         });
         if (nextToken) params.set('pagination_token', nextToken);
         const tweetsRes = await fetch(`${X_API_BASE}/users/${userId}/tweets?${params}`, { headers: authHeader });
-        if (!tweetsRes.ok) break;
+        if (!tweetsRes.ok) {
+          if (tweetsError === undefined) tweetsError = tweetsRes.status;
+          break;
+        }
         const tweetsData = await tweetsRes.json().catch(() => ({}));
         const tweets = tweetsData.data || [];
         for (const t of tweets) {
@@ -99,7 +104,7 @@ export async function GET(request: Request) {
         if (!nextToken || tweets.length === 0) break;
       }
     } catch (_) {
-      // Tweets API puede fallar (permisos, límite); devolvemos datos de perfil + ceros
+      if (tweetsError === undefined) tweetsError = 500;
     }
 
     const byDay14: { date: string; replies: number; engagement: number }[] = [];
@@ -137,6 +142,7 @@ export async function GET(request: Request) {
       topKeywords: [],
       byDay14,
       followersChart,
+      tweetsError,
     });
   } catch (e) {
     console.error('x/analytics error:', e);

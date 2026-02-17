@@ -37,13 +37,17 @@ export async function GET() {
 
     let xApiOk = false;
     let xApiError: string | null = null;
+    let xUserId: string | null = null;
     if (token) {
       try {
         const res = await fetch('https://api.twitter.com/2/users/me?user.fields=public_metrics', {
           headers: { Authorization: `Bearer ${token}` },
         });
         xApiOk = res.ok;
-        if (!res.ok) {
+        if (res.ok) {
+          const body = await res.json().catch(() => ({}));
+          xUserId = (body as { data?: { id?: string } }).data?.id ?? null;
+        } else {
           const body = await res.json().catch(() => ({}));
           xApiError = (body as { detail?: string }).detail || `HTTP ${res.status}`;
         }
@@ -52,8 +56,37 @@ export async function GET() {
       }
     }
 
+    let tweetsApiOk = false;
+    let tweetsError: number | null = null;
+    if (token && xUserId) {
+      try {
+        const tweetsRes = await fetch(
+          `https://api.twitter.com/2/users/${xUserId}/tweets?max_results=5&tweet.fields=created_at`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        tweetsApiOk = tweetsRes.ok;
+        if (!tweetsRes.ok) tweetsError = tweetsRes.status;
+      } catch (_) {
+        tweetsError = 500;
+      }
+    }
+
     const hasSupabaseCookie = cookieNames.some((n) => n.startsWith('sb-'));
     const hasReplaixToken = cookieNames.includes(X_TOKEN_COOKIE);
+
+    const hint = !session
+      ? hasSupabaseCookie
+        ? 'Hay cookies de Supabase pero la sesión no se leyó. Prueba en la misma URL donde hiciste login (local con local, producción con producción).'
+        : 'No hay sesión ni cookies de Supabase. Inicia sesión con X en ESTE mismo sitio (si estás en localhost, haz login en localhost; si estás en replaixai.com, haz login ahí) y vuelve a abrir /api/x/debug.'
+      : !token
+        ? 'Hay sesión pero no hay token de X (ni en cookie ni en DB). Supabase puede no estar devolviendo provider_token con X.'
+        : !xApiOk
+          ? `Token encontrado (${source}) pero la API de X falla: ${xApiError}. Revisa permisos de la app en developer.x.com.`
+          : !tweetsApiOk && tweetsError === 403
+            ? 'Perfil OK pero la API de tweets devuelve 403: a tu app de X le falta permiso para leer tweets. En developer.x.com → tu app → User authentication settings, pon "Read and write". Luego cierra sesión aquí e inicia sesión de nuevo.'
+            : !tweetsApiOk
+              ? `Perfil OK pero tweets fallan (${tweetsError}). Revisa developer.x.com.`
+              : 'Todo correcto: sesión, token, perfil y tweets OK.';
 
     return NextResponse.json({
       hasSession: !!session,
@@ -62,18 +95,12 @@ export async function GET() {
       tokenSource: source,
       xApiOk,
       xApiError,
+      tweetsApiOk,
+      tweetsError,
       cookieNames: cookieNames.length > 20 ? [...cookieNames.slice(0, 20), '...'] : cookieNames,
       hasSupabaseCookie,
       hasReplaixToken,
-      hint: !session
-        ? hasSupabaseCookie
-          ? 'Hay cookies de Supabase pero la sesión no se leyó. Prueba en la misma URL donde hiciste login (local con local, producción con producción).'
-          : 'No hay sesión ni cookies de Supabase. Inicia sesión con X en ESTE mismo sitio (si estás en localhost, haz login en localhost; si estás en replaixai.com, haz login ahí) y vuelve a abrir /api/x/debug.'
-        : !token
-          ? 'Hay sesión pero no hay token de X (ni en cookie ni en DB). Supabase puede no estar devolviendo provider_token con X.'
-          : !xApiOk
-            ? `Token encontrado (${source}) pero la API de X falla: ${xApiError}. Revisa permisos de la app en developer.x.com.`
-            : 'Todo correcto: sesión, token y API de X OK. Si el dashboard sigue a 0, recarga o revisa la consola.',
+      hint,
     });
   } catch (e) {
     return NextResponse.json({
@@ -83,6 +110,8 @@ export async function GET() {
       tokenSource: null,
       xApiOk: false,
       xApiError: null,
+      tweetsApiOk: false,
+      tweetsError: null,
       cookieNames: [],
       hasSupabaseCookie: false,
       hasReplaixToken: false,

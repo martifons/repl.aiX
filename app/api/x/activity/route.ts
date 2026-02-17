@@ -38,7 +38,9 @@ export async function GET(request: Request) {
     const res = await fetch(`${X_API_BASE}/users/${userId}/tweets?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) return NextResponse.json({ activities: [] });
+    if (!res.ok) {
+      return NextResponse.json({ activities: [], tweetsError: res.status });
+    }
 
     const data = await res.json();
     const tweets = data.data || [];

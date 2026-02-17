@@ -68,12 +68,25 @@ function AnalyticsPageContent() {
     );
   }
 
+  const showTweetsPermissionBanner = Boolean(useReal && xData?.tweetsError === 403);
+
   return (
     <PageContainer className="space-y-8">
       <PageHeader
         title="Analytics"
         description={useReal ? 'Live data from your X account' : 'Your growth and engagement over time'}
       />
+      {showTweetsPermissionBanner && (
+        <div
+          className="rounded-xl border-2 border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900"
+          role="alert"
+        >
+          <p className="font-medium">Respuestas y engagement en 0 por permisos</p>
+          <p className="mt-1 text-amber-800">
+            En <a href="https://developer.x.com/en/portal/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-medium">developer.x.com</a>, en tu app → User authentication settings → <strong>Read and write</strong>. Guarda, cierra sesión y vuelve a entrar.
+          </p>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">

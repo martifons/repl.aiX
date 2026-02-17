@@ -80,6 +80,10 @@ function DashboardContent() {
     }
   }, [searchParams]);
 
+  const showTweetsPermissionBanner = Boolean(
+    useReal && xData?.tweetsError === 403
+  );
+
   return (
     <PageContainer className="space-y-8">
       {paymentSuccess && (
@@ -88,6 +92,19 @@ function DashboardContent() {
           role="status"
         >
           Payment successful. Your plan is now active.
+        </div>
+      )}
+      {showTweetsPermissionBanner && (
+        <div
+          className="rounded-xl border-2 border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900"
+          role="alert"
+        >
+          <p className="font-medium">Datos de respuestas y actividad no disponibles</p>
+          <p className="mt-1 text-amber-800">
+            Tu app de X no tiene permiso para leer tus tweets. Para ver respuestas esta semana, engagement y actividad real: entra en{' '}
+            <a href="https://developer.x.com/en/portal/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-medium">developer.x.com</a>
+            , abre tu app → <strong>User authentication settings</strong> → tipo de app <strong>Read and write</strong>. Guarda, cierra sesión aquí y vuelve a entrar con X.
+          </p>
         </div>
       )}
       {showUpgradeBanner && (
@@ -131,6 +148,9 @@ function DashboardContent() {
         <Card padding="none">
           <CardHeader className="px-5 pt-5">
             <h2 className="text-sm font-semibold text-gray-900">Recent activity</h2>
+            {showTweetsPermissionBanner && (
+              <p className="mt-1 text-xs text-amber-700">Mostrando ejemplo. Tu actividad real aparecerá al activar el permiso de arriba.</p>
+            )}
           </CardHeader>
           <ul className="divide-y divide-gray-100">
             {(activityLoading && activities.length === 0 ? mockActivity : displayActivity).map((item) => (
