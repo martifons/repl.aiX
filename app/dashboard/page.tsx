@@ -43,7 +43,7 @@ function DashboardContent() {
     setActivityLoading(true);
     const headers: HeadersInit = {};
     if (user?.providerToken) headers['x-provider-token'] = user.providerToken;
-    fetch('/api/x/activity', { headers })
+    fetch('/api/x/activity', { headers, credentials: 'include' })
       .then((res) => (res.ok ? res.json() : { activities: [] }))
       .then((data) => {
         if (!cancelled && Array.isArray(data.activities) && data.activities.length > 0) {

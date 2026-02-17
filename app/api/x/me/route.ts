@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { X_TOKEN_COOKIE } from '@/lib/xAuth';
 
 const X_API_BASE = 'https://api.twitter.com/2';
 
@@ -8,7 +10,9 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
     const headerToken = request.headers.get('x-provider-token')?.trim();
-    const token = session?.provider_token || headerToken || undefined;
+    const cookieStore = await cookies();
+    const cookieToken = cookieStore.get(X_TOKEN_COOKIE)?.value?.trim();
+    const token = session?.provider_token || headerToken || cookieToken || undefined;
     if (!token) {
       return NextResponse.json({ error: 'Not authenticated with X' }, { status: 401 });
     }

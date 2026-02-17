@@ -43,7 +43,7 @@ export function useXAnalytics() {
       if (user?.providerToken) {
         headers['x-provider-token'] = user.providerToken;
       }
-      const res = await fetch('/api/x/analytics', { headers });
+      const res = await fetch('/api/x/analytics', { headers, credentials: 'include' });
       if (!res.ok) {
         if (res.status === 401) {
           setData(null);
@@ -93,7 +93,7 @@ export function useXMe() {
     try {
       const headers: HeadersInit = {};
       if (user?.providerToken) headers['x-provider-token'] = user.providerToken;
-      const res = await fetch('/api/x/me', { headers });
+      const res = await fetch('/api/x/me', { headers, credentials: 'include' });
       if (!res.ok) {
         if (res.status === 401) {
           setData(null);

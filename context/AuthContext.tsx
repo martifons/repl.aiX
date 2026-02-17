@@ -113,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (k?.startsWith(X_TOKEN_KEY + '_')) keysToRemove.push(k);
         }
         keysToRemove.forEach((k) => localStorage.removeItem(k));
+        await fetch('/api/auth/clear-x-token', { method: 'POST', credentials: 'include' });
       } catch (_) { /* ignore */ }
     }
     await supabase.auth.signOut();
