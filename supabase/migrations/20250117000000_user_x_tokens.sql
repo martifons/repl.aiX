@@ -11,6 +11,7 @@ create table if not exists public.user_x_tokens (
 alter table public.user_x_tokens enable row level security;
 
 -- Users can only read their own token (for API routes with user session)
+drop policy if exists "Users can read own x token" on public.user_x_tokens;
 create policy "Users can read own x token"
   on public.user_x_tokens for select
   using (auth.uid() = user_id);

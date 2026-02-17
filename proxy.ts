@@ -22,10 +22,15 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getSession();
+  try {
+    await supabase.auth.getSession();
+  } catch {
+    // No romper la petición si la sesión falla (ej. en API routes)
+  }
   return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  // No ejecutar proxy en rutas /api para que los Route Handlers devuelvan JSON y no se renderice la app
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
