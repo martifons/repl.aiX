@@ -54,3 +54,7 @@ La API de tweets (`GET /2/users/:id/tweets`) devuelve **403** si la app no tiene
 3. Guarda. **Cierra sesión** en repl.aiX y vuelve a **iniciar sesión con X** (así el token incluye el nuevo scope).
 4. Abre de nuevo el Dashboard; las respuestas, el engagement y la actividad reciente deberían cargarse.
 5. Para comprobar: abre `/api/x/debug`; si `tweetsApiOk` es `true`, ya está bien.
+
+### Si ves `tweetsError: 402` (Payment Required)
+
+X (Twitter) exige una **suscripción de pago** para el endpoint que lee el timeline de tweets (`GET /2/users/:id/tweets`). El plan gratuito de X API no incluye este acceso. Para tener respuestas, engagement y actividad real necesitas contratar **X API Basic** (aprox. 200 USD/mes) o superior en [developer.x.com → Products & pricing](https://developer.x.com/en/portal/products). No es un fallo de configuración de tu app.

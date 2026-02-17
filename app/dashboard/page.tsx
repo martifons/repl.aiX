@@ -81,8 +81,9 @@ function DashboardContent() {
   }, [searchParams]);
 
   const showTweetsPermissionBanner = Boolean(
-    useReal && xData?.tweetsError === 403
+    useReal && (xData?.tweetsError === 403 || xData?.tweetsError === 402)
   );
+  const is402PaymentRequired = useReal && xData?.tweetsError === 402;
 
   return (
     <PageContainer className="space-y-8">
@@ -101,9 +102,18 @@ function DashboardContent() {
         >
           <p className="font-medium">Datos de respuestas y actividad no disponibles</p>
           <p className="mt-1 text-amber-800">
-            Tu app de X no tiene permiso para leer tus tweets. Para ver respuestas esta semana, engagement y actividad real: entra en{' '}
-            <a href="https://developer.x.com/en/portal/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-medium">developer.x.com</a>
-            , abre tu app → <strong>User authentication settings</strong> → tipo de app <strong>Read and write</strong>. Guarda, cierra sesión aquí y vuelve a entrar con X.
+            {is402PaymentRequired ? (
+              <>
+                X (Twitter) devuelve 402: el endpoint para leer tus tweets requiere una <strong>suscripción de pago</strong> de X API (Basic o Pro). El plan gratuito no incluye acceso al timeline. Más info en{' '}
+                <a href="https://developer.x.com/en/portal/products" target="_blank" rel="noopener noreferrer" className="underline font-medium">developer.x.com → Products &amp; pricing</a>.
+              </>
+            ) : (
+              <>
+                Tu app de X no tiene permiso para leer tus tweets. Para ver respuestas esta semana, engagement y actividad real: entra en{' '}
+                <a href="https://developer.x.com/en/portal/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-medium">developer.x.com</a>
+                , abre tu app → <strong>User authentication settings</strong> → tipo de app <strong>Read and write</strong>. Guarda, cierra sesión aquí y vuelve a entrar con X.
+              </>
+            )}
           </p>
         </div>
       )}
@@ -149,7 +159,9 @@ function DashboardContent() {
           <CardHeader className="px-5 pt-5">
             <h2 className="text-sm font-semibold text-gray-900">Recent activity</h2>
             {showTweetsPermissionBanner && (
-              <p className="mt-1 text-xs text-amber-700">Mostrando ejemplo. Tu actividad real aparecerá al activar el permiso de arriba.</p>
+              <p className="mt-1 text-xs text-amber-700">
+                {is402PaymentRequired ? 'Mostrando ejemplo. La actividad real requiere suscripción de pago de X API.' : 'Mostrando ejemplo. Tu actividad real aparecerá al activar el permiso de arriba.'}
+              </p>
             )}
           </CardHeader>
           <ul className="divide-y divide-gray-100">

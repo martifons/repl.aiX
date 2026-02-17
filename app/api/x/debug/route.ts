@@ -84,9 +84,11 @@ export async function GET() {
           ? `Token encontrado (${source}) pero la API de X falla: ${xApiError}. Revisa permisos de la app en developer.x.com.`
           : !tweetsApiOk && tweetsError === 403
             ? 'Perfil OK pero la API de tweets devuelve 403: a tu app de X le falta permiso para leer tweets. En developer.x.com → tu app → User authentication settings, pon "Read and write". Luego cierra sesión aquí e inicia sesión de nuevo.'
-            : !tweetsApiOk
-              ? `Perfil OK pero tweets fallan (${tweetsError}). Revisa developer.x.com.`
-              : 'Todo correcto: sesión, token, perfil y tweets OK.';
+            : !tweetsApiOk && tweetsError === 402
+              ? 'Perfil OK pero la API de tweets devuelve 402 (Payment Required): X exige una suscripción de pago (Basic, Pro) para leer el timeline de tweets. El plan gratuito de X API no incluye este endpoint. Ver developer.x.com → Pricing.'
+              : !tweetsApiOk
+                ? `Perfil OK pero tweets fallan (${tweetsError}). Revisa developer.x.com.`
+                : 'Todo correcto: sesión, token, perfil y tweets OK.';
 
     return NextResponse.json({
       hasSession: !!session,
