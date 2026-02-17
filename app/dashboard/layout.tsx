@@ -30,7 +30,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const { data: subscription } = useSubscriptionStatus(user?.email);
   const isDev = process.env.NODE_ENV === 'development';
-  const hasPlan = subscription?.hasSubscription === true || isDev;
+  const grantPlanForTesting = process.env.NEXT_PUBLIC_GRANT_PLAN_FOR_TESTING === 'true';
+  const hasPlan = subscription?.hasSubscription === true || isDev || grantPlanForTesting;
   const nav = hasPlan ? navAll : navFree;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [planDropdownOpen, setPlanDropdownOpen] = useState(false);

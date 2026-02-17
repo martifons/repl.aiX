@@ -11,11 +11,13 @@ interface RequirePlanProps {
 }
 
 const isDev = process.env.NODE_ENV === 'development';
+/** Para probar Analytics/Tweets/Top Performing sin pagar: pon NEXT_PUBLIC_GRANT_PLAN_FOR_TESTING=true en Vercel o .env.local. Quitar en producción real. */
+const grantPlanForTesting = process.env.NEXT_PUBLIC_GRANT_PLAN_FOR_TESTING === 'true';
 
 export default function RequirePlan({ children }: RequirePlanProps) {
   const { user } = useAuth();
   const { data: subscription, loading } = useSubscriptionStatus(user?.email);
-  const hasPlan = subscription?.hasSubscription === true || isDev;
+  const hasPlan = subscription?.hasSubscription === true || isDev || grantPlanForTesting;
 
   if (loading) {
     return (

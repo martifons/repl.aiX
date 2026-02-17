@@ -68,7 +68,8 @@ function DashboardContent() {
 
   const displayActivity = activities.length > 0 ? activities : mockActivity;
   const isDev = process.env.NODE_ENV === 'development';
-  const hasPlan = subscription?.hasSubscription === true || isDev;
+  const grantPlanForTesting = process.env.NEXT_PUBLIC_GRANT_PLAN_FOR_TESTING === 'true';
+  const hasPlan = subscription?.hasSubscription === true || isDev || grantPlanForTesting;
   const showUpgradeBanner = !subscriptionLoading && !hasPlan;
 
   useEffect(() => {
