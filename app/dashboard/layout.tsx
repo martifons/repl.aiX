@@ -115,12 +115,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="ml-0 flex flex-1 flex-col min-w-0 lg:ml-60">
-          <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-white/30 dashboard-glass px-4 sm:px-6">
+          <header className="sticky top-0 z-20 flex h-14 sm:h-16 shrink-0 items-center justify-between gap-2 sm:gap-4 border-b border-white/30 dashboard-glass px-3 sm:px-6 safe-area-padding-x">
             <button
               type="button"
               aria-label="Open menu"
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 text-gray-600 hover:bg-white/50 hover:text-gray-900 lg:hidden transition-colors"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-gray-600 hover:bg-white/50 hover:text-gray-900 lg:hidden transition-colors touch-manipulation"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -174,7 +174,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-6 lg:p-8">{children}</main>
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">{children}</main>
         </div>
       </div>
     </DashboardThemeProvider>

@@ -91,7 +91,7 @@ function DashboardContent() {
       />
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
         <Card padding="md" className="metric-card-hover">
           <p className="text-sm font-medium text-gray-500">Replies this week</p>
           <p className="mt-1.5 text-2xl font-semibold tracking-tight text-gray-900 tabular-nums">
@@ -126,11 +126,11 @@ function DashboardContent() {
                     item.type === 'reply' ? 'bg-[#0057FF]' : item.type === 'likes' ? 'bg-amber-400' : 'bg-emerald-500'
                   }`}
                 />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-900">{item.text}</p>
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <p className="text-sm font-medium text-gray-900 truncate sm:whitespace-normal sm:break-words">{item.text}</p>
                   {item.meta && <p className="mt-0.5 text-xs text-gray-500">{item.meta}</p>}
                 </div>
-                <span className="text-xs text-gray-400">{item.time}</span>
+                <span className="text-xs text-gray-400 shrink-0">{item.time}</span>
               </li>
             ))}
           </ul>

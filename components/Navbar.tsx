@@ -19,8 +19,8 @@ export default function Navbar() {
 
   if (isLoading) {
     return (
-      <nav className="h-16 border-b border-[rgba(0,0,0,0.05)] bg-[#FFFFFF]">
-        <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6">
+      <nav className="h-14 sm:h-16 border-b border-[rgba(0,0,0,0.05)] bg-[#FFFFFF]">
+        <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4 sm:px-6">
           <span className="text-lg font-semibold text-[#0057FF]">repl.aiX</span>
         </div>
       </nav>
@@ -28,27 +28,27 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="h-16 border-b border-[rgba(0,0,0,0.05)] bg-[#FFFFFF]">
-      <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6">
+    <nav className="h-14 sm:h-16 border-b border-[rgba(0,0,0,0.05)] bg-[#FFFFFF] safe-area-padding-x">
+      <div className="mx-auto flex h-full max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link
           href="/"
-          className="text-lg font-semibold tracking-tight text-[#0057FF] hover:text-[#0047dd] transition-colors duration-300"
+          className="min-h-[44px] min-w-[44px] flex items-center justify-center -m-2 text-lg font-semibold tracking-tight text-[#0057FF] hover:text-[#0047dd] transition-colors duration-300 shrink-0"
         >
           repl.aiX
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <Link
             href="/dashboard"
-            className="rounded-[12px] px-3 py-2 text-sm font-medium text-[#333333] hover:bg-[#F7F8FA] hover:text-[#0057FF] transition-colors duration-300"
+            className="min-h-[44px] inline-flex items-center rounded-[12px] px-3 py-2.5 text-sm font-medium text-[#333333] hover:bg-[#F7F8FA] hover:text-[#0057FF] transition-colors duration-300 touch-manipulation"
           >
             Dashboard
           </Link>
           {!isLogged ? (
-            <ButtonLink href="/login" variant="primary" size="md">
+            <ButtonLink href="/login" variant="primary" size="md" className="min-h-[44px] touch-manipulation">
               Get Started
             </ButtonLink>
           ) : (
-            <Button variant="ghost" size="md" onClick={handleLogout}>
+            <Button variant="ghost" size="md" onClick={handleLogout} className="min-h-[44px] touch-manipulation">
               Logout
             </Button>
           )}

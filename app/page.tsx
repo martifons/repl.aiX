@@ -13,14 +13,14 @@ export default function Home() {
         {/* Hero */}
         <section
           id="hero"
-          className="relative overflow-hidden border-b border-[rgba(0,0,0,0.05)]"
+          className="relative overflow-hidden border-b border-[rgba(0,0,0,0.05)] safe-area-padding-x"
         >
-          <div className="relative mx-auto max-w-5xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24 md:pt-32 md:pb-28 text-center">
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#0057FF] animate-fade-in">
+          <div className="relative mx-auto max-w-5xl px-4 pt-16 pb-12 sm:px-6 sm:pt-28 sm:pb-24 md:pt-32 md:pb-28 text-center">
+            <p className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-[#0057FF] animate-fade-in">
               For creators & founders
             </p>
             <h1
-              className="mt-4 text-[2.75rem] font-bold leading-[1.15] tracking-tight text-[#1A1A1A] sm:text-5xl md:text-6xl lg:text-[3.5rem]"
+              className="mt-3 text-[1.875rem] leading-tight font-bold tracking-tight text-[#1A1A1A] sm:text-5xl sm:leading-[1.15] md:text-6xl lg:text-[3.5rem]"
               style={{ textShadow: '0 1px 2px rgba(255,255,255,0.6)' }}
             >
               Grow on X faster
@@ -29,21 +29,21 @@ export default function Home() {
                 with AI replies
               </span>
             </h1>
-            <p className="mt-6 max-w-xl mx-auto text-[1.25rem] font-normal text-[#333333] leading-relaxed">
+            <p className="mt-4 sm:mt-6 max-w-xl mx-auto text-base sm:text-[1.25rem] font-normal text-[#333333] leading-relaxed px-1">
               Find the right tweets, get smart reply suggestions, and grow your following—without spending hours online.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center">
               <ButtonLink
                 href="/login"
                 variant="primary"
                 size="lg"
-                className="btn-cta-landing animate-bounce-hover shadow-[0_4px_20px_rgba(0,87,255,0.25)]"
+                className="btn-cta-landing animate-bounce-hover shadow-[0_4px_20px_rgba(0,87,255,0.25)] min-h-[48px] touch-manipulation"
               >
                 Get Started — Free
               </ButtonLink>
               <a
                 href="#demo"
-                className="btn-secondary-landing inline-flex items-center justify-center rounded-[12px] border border-[rgba(0,0,0,0.08)] bg-white px-6 py-3 text-base font-medium text-[#333333] shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:border-[#0057FF] hover:bg-[#0057FF]/5 hover:text-[#0057FF] hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-[#0057FF] focus:ring-offset-2"
+                className="btn-secondary-landing inline-flex items-center justify-center rounded-[12px] border border-[rgba(0,0,0,0.08)] bg-white px-6 py-3.5 min-h-[48px] text-base font-medium text-[#333333] shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:border-[#0057FF] hover:bg-[#0057FF]/5 hover:text-[#0057FF] hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-[#0057FF] focus:ring-offset-2 touch-manipulation"
               >
                 See how it works
               </a>
@@ -89,8 +89,8 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section className="border-t border-[rgba(0,0,0,0.05)] py-20">
-          <div className="mx-auto max-w-5xl px-6">
+        <section className="border-t border-[rgba(0,0,0,0.05)] py-12 sm:py-20 safe-area-padding-x">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
             <ScrollReveal>
               <h2 className="text-center text-3xl font-semibold tracking-tight text-[#1A1A1A]">
                 Everything you need to grow on X
@@ -99,7 +99,7 @@ export default function Home() {
                 One tool. Smarter replies. Real growth.
               </p>
             </ScrollReveal>
-            <div className="mt-12 grid gap-12 sm:grid-cols-3">
+            <div className="mt-10 sm:mt-12 grid gap-8 sm:gap-12 sm:grid-cols-3">
               <ScrollReveal delay={1}>
                 <Card padding="lg" className="landing-card-hover group" glass={false}>
                   <div className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-[#0057FF]/10 text-[#0057FF] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:bg-[#0057FF]/15">
@@ -138,17 +138,17 @@ export default function Home() {
         </section>
 
         {/* Testimonials / Social proof */}
-        <section className="border-t border-[rgba(0,0,0,0.05)] py-20">
-          <div className="mx-auto max-w-5xl px-6">
+        <section className="border-t border-[rgba(0,0,0,0.05)] py-12 sm:py-20 safe-area-padding-x">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
             <ScrollReveal>
-              <h2 className="text-center text-3xl font-semibold tracking-tight text-[#1A1A1A]">
+              <h2 className="text-center text-2xl sm:text-3xl font-semibold tracking-tight text-[#1A1A1A]">
                 Loved by creators building in public
               </h2>
               <p className="mt-2 text-center text-base text-[#333333]">
                 Join thousands growing on X with less effort.
               </p>
             </ScrollReveal>
-            <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            <div className="mt-10 sm:mt-12 grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-3">
               <ScrollReveal delay={1}>
                 <div className="rounded-[16px] bg-gradient-to-br from-[#0057FF] to-[#66B2FF] p-6 text-white shadow-[0_4px_20px_rgba(0,87,255,0.2)] transition-all duration-300 hover:translate-y-[-3px] hover:shadow-[0_12px_36px_rgba(0,87,255,0.28)] hover:scale-[1.02]">
                   <div className="flex items-center gap-2 animate-check-pop">
@@ -190,14 +190,14 @@ export default function Home() {
         </section>
 
         {/* How it works */}
-        <section id="demo" className="border-t border-[rgba(0,0,0,0.05)] py-20">
-          <div className="mx-auto max-w-4xl px-6">
+        <section id="demo" className="border-t border-[rgba(0,0,0,0.05)] py-12 sm:py-20 safe-area-padding-x">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <ScrollReveal>
-              <h2 className="text-center text-3xl font-semibold tracking-tight text-[#1A1A1A]">
+              <h2 className="text-center text-2xl sm:text-3xl font-semibold tracking-tight text-[#1A1A1A]">
                 How it works
               </h2>
             </ScrollReveal>
-            <div className="mt-14 flex flex-col items-center gap-10 sm:flex-row sm:justify-center sm:gap-16">
+            <div className="mt-10 sm:mt-14 flex flex-col items-center gap-8 sm:flex-row sm:justify-center sm:gap-16">
               <ScrollReveal delay={1}>
                 <div className="flex flex-col items-center text-center">
                   <div className="flex h-16 w-16 items-center justify-center rounded-[16px] bg-[#0057FF] text-xl font-semibold text-white shadow-[0_4px_20px_rgba(0,87,255,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_28px_rgba(0,87,255,0.45)] active:scale-[0.98]">
@@ -232,15 +232,15 @@ export default function Home() {
         </section>
 
         {/* Pricing */}
-        <section id="pricing" className="border-t border-[rgba(0,0,0,0.05)] py-20">
-          <div className="mx-auto max-w-5xl px-6">
+        <section id="pricing" className="border-t border-[rgba(0,0,0,0.05)] py-12 sm:py-20 safe-area-padding-x">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
             <ScrollReveal>
-              <h2 className="text-center text-[2.25rem] font-semibold tracking-tight text-[#1A1A1A]">
+              <h2 className="text-center text-2xl sm:text-[2.25rem] font-semibold tracking-tight text-[#1A1A1A]">
                 Simple pricing
               </h2>
               <p className="mt-2 text-center text-base text-[#333333]">Start free. No credit card required.</p>
             </ScrollReveal>
-            <div className="mt-14 grid gap-8 sm:grid-cols-3">
+            <div className="mt-10 sm:mt-14 grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-3">
               <ScrollReveal delay={1}>
                 <Card padding="lg" className="landing-card-hover border-2 border-gray-200" glass={false}>
                   <h3 className="text-lg font-semibold text-[#1A1A1A]">Starter</h3>
@@ -381,8 +381,8 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-[rgba(0,0,0,0.05)] py-10">
-          <div className="mx-auto max-w-4xl px-6 text-center text-sm text-[#333333]">
+        <footer className="border-t border-[rgba(0,0,0,0.05)] py-8 sm:py-10 safe-area-padding-x safe-area-bottom">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center text-sm text-[#333333]">
             © {new Date().getFullYear()} repl.aiX. All rights reserved.
           </div>
         </footer>

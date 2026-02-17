@@ -93,17 +93,17 @@ export default function ProfilePage() {
       />
 
       <Card padding="none" className="overflow-hidden">
-        <div className="h-28 bg-gradient-to-br from-[#0057FF] to-[#66B2FF]" />
-        <div className="px-6 pb-6">
-          <div className="-mt-12 flex flex-col sm:flex-row sm:items-end sm:gap-6">
-            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-4 border-white bg-gray-100 shadow-[0_8px_24px_rgba(0,0,0,0.12)] ring-2 ring-[#0057FF]/20 ring-offset-2 transition-shadow duration-300 hover:shadow-[0_12px_32px_rgba(0,87,255,0.15)]">
-              <Image src={getHighResAvatarUrl(display.avatar) || display.avatar} alt="" width={96} height={96} className="object-cover" />
+        <div className="h-24 sm:h-28 bg-gradient-to-br from-[#0057FF] to-[#66B2FF]" />
+        <div className="px-4 sm:px-6 pb-5 sm:pb-6">
+          <div className="-mt-10 sm:-mt-12 flex flex-col sm:flex-row sm:items-end sm:gap-6">
+            <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-2xl border-4 border-white bg-gray-100 shadow-[0_8px_24px_rgba(0,0,0,0.12)] ring-2 ring-[#0057FF]/20 ring-offset-2">
+              <Image src={getHighResAvatarUrl(display.avatar) || display.avatar} alt="" width={96} height={96} className="object-cover size-full" />
             </div>
-            <div className="mt-4 sm:mt-0 sm:pb-1">
-              <h2 className="text-xl font-semibold tracking-tight text-gray-900">{display.name}</h2>
-              <p className="text-gray-600">{display.username}</p>
-              <p className="mt-0.5 text-sm text-gray-500">{display.email || '—'}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+            <div className="mt-3 sm:mt-0 sm:pb-1 min-w-0">
+              <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-gray-900 break-words">{display.name}</h2>
+              <p className="text-gray-600 break-all">{display.username}</p>
+              <p className="mt-0.5 text-sm text-gray-500 truncate">{display.email || '—'}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
                 <span className="font-medium text-gray-700">
                   {display.followers?.toLocaleString() ?? '—'} followers
                 </span>

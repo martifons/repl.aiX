@@ -37,6 +37,16 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area para móviles con notch / barra de estado */
+.safe-area-padding-x {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Card hover: levitación 2-3px + sombra más marcada */
