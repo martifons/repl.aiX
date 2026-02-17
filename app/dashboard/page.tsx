@@ -31,7 +31,8 @@ function DashboardContent() {
   const repliesThisWeek = kpis.repliesSentOverTime.reduce((a, b) => a + b, 0);
   const engagementGained = kpis.engagementReceivedOverTime.reduce((a, b) => a + b, 0);
   const { data: subscription, loading: subscriptionLoading } = useSubscriptionStatus(user?.email);
-  const hasPlan = subscription?.hasSubscription === true;
+  const isDev = process.env.NODE_ENV === 'development';
+  const hasPlan = subscription?.hasSubscription === true || isDev;
   const showUpgradeBanner = !subscriptionLoading && !hasPlan;
 
   useEffect(() => {

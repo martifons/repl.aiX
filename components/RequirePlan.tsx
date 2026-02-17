@@ -10,10 +10,12 @@ interface RequirePlanProps {
   children: React.ReactNode;
 }
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export default function RequirePlan({ children }: RequirePlanProps) {
   const { user } = useAuth();
   const { data: subscription, loading } = useSubscriptionStatus(user?.email);
-  const hasPlan = subscription?.hasSubscription === true;
+  const hasPlan = subscription?.hasSubscription === true || isDev;
 
   if (loading) {
     return (
