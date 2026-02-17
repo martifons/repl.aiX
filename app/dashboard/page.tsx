@@ -41,7 +41,9 @@ function DashboardContent() {
   useEffect(() => {
     let cancelled = false;
     setActivityLoading(true);
-    fetch('/api/x/activity')
+    const headers: HeadersInit = {};
+    if (user?.providerToken) headers['x-provider-token'] = user.providerToken;
+    fetch('/api/x/activity', { headers })
       .then((res) => (res.ok ? res.json() : { activities: [] }))
       .then((data) => {
         if (!cancelled && Array.isArray(data.activities) && data.activities.length > 0) {
@@ -51,7 +53,7 @@ function DashboardContent() {
       .catch(() => {})
       .finally(() => { if (!cancelled) setActivityLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [user?.providerToken]);
   const displayActivity = activities.length > 0 ? activities : mockActivity;
   const isDev = process.env.NODE_ENV === 'development';
   const hasPlan = subscription?.hasSubscription === true || isDev;

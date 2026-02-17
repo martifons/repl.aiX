@@ -3,11 +3,12 @@ import { NextResponse } from 'next/server';
 
 const X_API_BASE = 'https://api.twitter.com/2';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.provider_token;
+    const headerToken = request.headers.get('x-provider-token')?.trim();
+    const token = session?.provider_token || headerToken || undefined;
     if (!token) {
       return NextResponse.json({ error: 'Not authenticated with X' }, { status: 401 });
     }

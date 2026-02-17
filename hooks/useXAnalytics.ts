@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export interface XAnalyticsData {
   real: boolean;
@@ -29,6 +30,7 @@ export interface XActivityItem {
 }
 
 export function useXAnalytics() {
+  const { user } = useAuth();
   const [data, setData] = useState<XAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,11 @@ export function useXAnalytics() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/x/analytics');
+      const headers: HeadersInit = {};
+      if (user?.providerToken) {
+        headers['x-provider-token'] = user.providerToken;
+      }
+      const res = await fetch('/api/x/analytics', { headers });
       if (!res.ok) {
         if (res.status === 401) {
           setData(null);
@@ -53,7 +59,7 @@ export function useXAnalytics() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.providerToken]);
 
   useEffect(() => {
     refetch();
@@ -76,6 +82,7 @@ export interface XMeData {
 }
 
 export function useXMe() {
+  const { user } = useAuth();
   const [data, setData] = useState<XMeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +91,9 @@ export function useXMe() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/x/me');
+      const headers: HeadersInit = {};
+      if (user?.providerToken) headers['x-provider-token'] = user.providerToken;
+      const res = await fetch('/api/x/me', { headers });
       if (!res.ok) {
         if (res.status === 401) {
           setData(null);
@@ -100,7 +109,7 @@ export function useXMe() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.providerToken]);
 
   useEffect(() => {
     refetch();

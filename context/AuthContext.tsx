@@ -29,6 +29,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const X_TOKEN_KEY = 'replaix_x_token';
 
 function mapSessionToAppUser(session: Session): AppUser {
   const u = session.user;
@@ -36,6 +37,19 @@ function mapSessionToAppUser(session: Session): AppUser {
   const name = meta.name ?? meta.full_name ?? meta.user_name ?? u.email ?? 'User';
   const username = meta.user_name ? `@${meta.user_name}` : '@user';
   const rawAvatar = meta.avatar_url ?? meta.profile_image_url_https ?? meta.picture ?? '';
+  let providerToken = session.provider_token ?? undefined;
+  if (typeof window !== 'undefined') {
+    if (providerToken) {
+      try {
+        localStorage.setItem(`${X_TOKEN_KEY}_${u.id}`, providerToken);
+      } catch (_) { /* ignore */ }
+    } else {
+      try {
+        const stored = localStorage.getItem(`${X_TOKEN_KEY}_${u.id}`);
+        if (stored) providerToken = stored;
+      } catch (_) { /* ignore */ }
+    }
+  }
   return {
     id: u.id,
     name: String(name),
@@ -46,7 +60,7 @@ function mapSessionToAppUser(session: Session): AppUser {
     repliesLimit: 15,
     joinDate: new Date().toISOString().slice(0, 10),
     avatar: getHighResAvatarUrl(String(rawAvatar)) || String(rawAvatar),
-    providerToken: session.provider_token ?? undefined,
+    providerToken,
   };
 }
 
@@ -91,6 +105,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
+    if (typeof window !== 'undefined') {
+      try {
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k?.startsWith(X_TOKEN_KEY + '_')) keysToRemove.push(k);
+        }
+        keysToRemove.forEach((k) => localStorage.removeItem(k));
+      } catch (_) { /* ignore */ }
+    }
     await supabase.auth.signOut();
     setUserState(null);
   }, [supabase.auth]);

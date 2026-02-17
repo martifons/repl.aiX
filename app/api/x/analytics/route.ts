@@ -3,11 +3,13 @@ import { NextResponse } from 'next/server';
 
 const X_API_BASE = 'https://api.twitter.com/2';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.provider_token;
+    // Token from server session or from client (Supabase may not persist provider_token on server)
+    const headerToken = request.headers.get('x-provider-token')?.trim();
+    const token = session?.provider_token || headerToken || undefined;
     if (!token) {
       return NextResponse.json({ error: 'Not authenticated with X' }, { status: 401 });
     }
@@ -46,21 +48,27 @@ export async function GET() {
       });
     }
 
-    const params = new URLSearchParams({
-      max_results: '100',
-      'tweet.fields': 'public_metrics,created_at,in_reply_to_user_id',
-      exclude: 'retweets',
-    });
-    const tweetsRes = await fetch(`${X_API_BASE}/users/${userId}/tweets?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
     const byDay: Record<string, { replies: number; engagement: number }> = {};
     let totalReplies = 0;
     let totalEngagement = 0;
     const now = new Date();
+    const authHeader = { Authorization: `Bearer ${token}` };
+    let nextToken: string | null = null;
+    const maxPages = 5;
 
-    if (tweetsRes.ok) {
+    for (let page = 0; page < maxPages; page++) {
+      const params = new URLSearchParams({
+        max_results: '100',
+        'tweet.fields': 'public_metrics,created_at,in_reply_to_user_id',
+        exclude: 'retweets',
+      });
+      if (nextToken) params.set('pagination_token', nextToken);
+      const tweetsRes = await fetch(`${X_API_BASE}/users/${userId}/tweets?${params}`, {
+        headers: authHeader,
+      });
+
+      if (!tweetsRes.ok) break;
+
       const tweetsData = await tweetsRes.json();
       const tweets = tweetsData.data || [];
       for (const t of tweets) {
@@ -79,6 +87,9 @@ export async function GET() {
         }
         totalEngagement += engagement;
       }
+
+      nextToken = tweetsData.meta?.next_token ?? null;
+      if (!nextToken || tweets.length === 0) break;
     }
 
     const byDay14: { date: string; replies: number; engagement: number }[] = [];
