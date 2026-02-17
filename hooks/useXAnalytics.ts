@@ -9,6 +9,8 @@ export interface XAnalyticsData {
   tweetCount?: number;
   totalReplies?: number;
   totalEngagement?: number;
+  /** Replies sent today (from X) for plan usage */
+  repliesToday?: number;
   repliesSentOverTime: number[];
   engagementReceivedOverTime: number[];
   replySuccessRate: number;
@@ -16,6 +18,14 @@ export interface XAnalyticsData {
   topKeywords: { keyword: string; count: number; engagement: number }[];
   byDay14: { date: string; replies: number; engagement: number }[];
   followersChart: { date: string; followers: number }[];
+}
+
+export interface XActivityItem {
+  id: string;
+  type: 'reply' | 'likes' | 'tweet_found';
+  text: string;
+  time: string;
+  meta?: string;
 }
 
 export function useXAnalytics() {

@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
+import { getHighResAvatarUrl } from '@/lib/avatarUtils';
 
 export interface AppUser {
   id: string;
@@ -34,7 +35,7 @@ function mapSessionToAppUser(session: Session): AppUser {
   const meta = u.user_metadata ?? {};
   const name = meta.name ?? meta.full_name ?? meta.user_name ?? u.email ?? 'User';
   const username = meta.user_name ? `@${meta.user_name}` : '@user';
-  const avatar = meta.avatar_url ?? meta.profile_image_url_https ?? meta.picture ?? '';
+  const rawAvatar = meta.avatar_url ?? meta.profile_image_url_https ?? meta.picture ?? '';
   return {
     id: u.id,
     name: String(name),
@@ -44,7 +45,7 @@ function mapSessionToAppUser(session: Session): AppUser {
     repliesUsedToday: 0,
     repliesLimit: 15,
     joinDate: new Date().toISOString().slice(0, 10),
-    avatar: String(avatar),
+    avatar: getHighResAvatarUrl(String(rawAvatar)) || String(rawAvatar),
     providerToken: session.provider_token ?? undefined,
   };
 }

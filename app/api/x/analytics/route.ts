@@ -31,6 +31,9 @@ export async function GET() {
         followersCurrent,
         tweetCount,
         followersGrowth: 0,
+        totalReplies: 0,
+        totalEngagement: 0,
+        repliesToday: 0,
         repliesSentOverTime: [],
         engagementReceivedOverTime: [],
         replySuccessRate: 0,
@@ -87,6 +90,9 @@ export async function GET() {
       byDay14.push({ date: dateStr, replies: day.replies, engagement: day.engagement });
     }
 
+    const todayStr = now.toISOString().slice(0, 10);
+    const repliesToday = byDay[todayStr]?.replies ?? 0;
+
     const repliesSentOverTime = byDay14.map((d) => d.replies);
     const engagementReceivedOverTime = byDay14.map((d) => d.engagement);
     const replySuccessRate = totalReplies > 0
@@ -106,6 +112,7 @@ export async function GET() {
       tweetCount,
       totalReplies,
       totalEngagement,
+      repliesToday,
       repliesSentOverTime,
       engagementReceivedOverTime,
       replySuccessRate: Math.min(100, replySuccessRate),

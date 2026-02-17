@@ -8,6 +8,11 @@ import ParticleBackground from '@/components/ParticleBackground';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
+export const metadata = {
+  title: 'repl.aiX',
+  description: 'Repl.aiX - Grow your X presence with AI',
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>

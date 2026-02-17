@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
+import { getHighResAvatarUrl } from '@/lib/avatarUtils';
 import { getUserProfile, getGrowthSummaryMessage } from '@/services/analyticsService';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 import { useXMe, useXAnalytics } from '@/hooks/useXAnalytics';
@@ -39,6 +40,8 @@ export default function ProfilePage() {
   if (!authUser) return null;
 
   const displayPlan = subscription?.plan ?? authUser?.plan ?? 'Trial';
+  const planToLimit: Record<string, number> = { Starter: 15, Trial: 15, Pro: 30, Growth: 50 };
+  const repliesLimitFromPlan = planToLimit[subscription?.plan ?? authUser?.plan ?? 'Starter'] ?? 15;
   const baseDisplay = profile ?? {
     name: authUser.name,
     username: authUser.username,
@@ -57,6 +60,8 @@ export default function ProfilePage() {
     followers: xMe?.public_metrics?.followers_count ?? baseDisplay.followers,
     totalRepliesSent: xAnalytics?.real && xAnalytics.totalReplies != null ? xAnalytics.totalReplies : baseDisplay.totalRepliesSent,
     totalEngagementReceived: xAnalytics?.real && xAnalytics.totalEngagement != null ? xAnalytics.totalEngagement : baseDisplay.totalEngagementReceived,
+    repliesUsedToday: xAnalytics?.real && xAnalytics.repliesToday != null ? xAnalytics.repliesToday : baseDisplay.repliesUsedToday,
+    repliesLimit: subscription?.plan ? repliesLimitFromPlan : baseDisplay.repliesLimit,
   };
   const growthMessage = xAnalytics?.real && display.totalEngagementReceived != null
     ? `Your replies generated ${display.totalEngagementReceived.toLocaleString()} engagements. Keep going!`
@@ -92,7 +97,7 @@ export default function ProfilePage() {
         <div className="px-6 pb-6">
           <div className="-mt-12 flex flex-col sm:flex-row sm:items-end sm:gap-6">
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-4 border-white bg-gray-100 shadow-[0_8px_24px_rgba(0,0,0,0.12)] ring-2 ring-[#0057FF]/20 ring-offset-2 transition-shadow duration-300 hover:shadow-[0_12px_32px_rgba(0,87,255,0.15)]">
-              <Image src={display.avatar} alt="" width={96} height={96} className="object-cover" />
+              <Image src={getHighResAvatarUrl(display.avatar) || display.avatar} alt="" width={96} height={96} className="object-cover" />
             </div>
             <div className="mt-4 sm:mt-0 sm:pb-1">
               <h2 className="text-xl font-semibold tracking-tight text-gray-900">{display.name}</h2>

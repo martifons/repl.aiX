@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getHighResAvatarUrl } from '@/lib/avatarUtils';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SidebarItem } from '@/components/ui/SidebarItem';
@@ -166,7 +167,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                 <span className="text-sm font-medium text-[#1A1A1A] hidden sm:inline">{user?.name ?? 'User'}</span>
                 <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/60 bg-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all duration-200 hover:border-[#0057FF]/30 hover:shadow-[0_2px_12px_rgba(0,87,255,0.12)]">
                   {user?.avatar && (
-                    <Image src={user.avatar} alt="" width={36} height={36} className="object-cover" />
+                    <Image src={getHighResAvatarUrl(user.avatar) || user.avatar} alt="" width={36} height={36} className="object-cover" />
                   )}
                 </div>
               </Link>

@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getAnalyticsKPIs } from '@/services/analyticsService';
-import { useXAnalytics } from '@/hooks/useXAnalytics';
+import { useXAnalytics, type XActivityItem } from '@/hooks/useXAnalytics';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 import { mockActivity } from '@/lib/mockActivity';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
@@ -28,9 +28,31 @@ function DashboardContent() {
     }
     return getAnalyticsKPIs();
   }, [xData, xLoading]);
-  const repliesThisWeek = kpis.repliesSentOverTime.reduce((a, b) => a + b, 0);
-  const engagementGained = kpis.engagementReceivedOverTime.reduce((a, b) => a + b, 0);
+  const useReal = xData?.real && !xLoading;
+  const repliesArray = kpis.repliesSentOverTime;
+  const engagementArray = kpis.engagementReceivedOverTime;
+  const last7Replies = useReal && repliesArray.length >= 7 ? repliesArray.slice(-7) : repliesArray;
+  const last7Engagement = useReal && engagementArray.length >= 7 ? engagementArray.slice(-7) : engagementArray;
+  const repliesThisWeek = last7Replies.reduce((a, b) => a + b, 0);
+  const engagementGained = last7Engagement.reduce((a, b) => a + b, 0);
   const { data: subscription, loading: subscriptionLoading } = useSubscriptionStatus(user?.email);
+  const [activities, setActivities] = useState<XActivityItem[]>([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    setActivityLoading(true);
+    fetch('/api/x/activity')
+      .then((res) => (res.ok ? res.json() : { activities: [] }))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data.activities) && data.activities.length > 0) {
+          setActivities(data.activities);
+        }
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setActivityLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+  const displayActivity = activities.length > 0 ? activities : mockActivity;
   const isDev = process.env.NODE_ENV === 'development';
   const hasPlan = subscription?.hasSubscription === true || isDev;
   const showUpgradeBanner = !subscriptionLoading && !hasPlan;
@@ -97,7 +119,7 @@ function DashboardContent() {
             <h2 className="text-sm font-semibold text-gray-900">Recent activity</h2>
           </CardHeader>
           <ul className="divide-y divide-gray-100">
-            {mockActivity.map((item) => (
+            {(activityLoading && activities.length === 0 ? mockActivity : displayActivity).map((item) => (
               <li key={item.id} className="flex items-start gap-3 px-5 py-3.5 hover:bg-[#0057FF]/5 transition-colors duration-200 rounded-lg">
                 <span
                   className={`mt-1.5 flex h-2 w-2 shrink-0 rounded-full ${

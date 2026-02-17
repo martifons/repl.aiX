@@ -3,9 +3,11 @@ import { Card } from '@/components/ui/Card';
 import { ButtonLink } from '@/components/ui/Button';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { PricingCTA } from '@/components/PricingCTA';
+import RedirectIfLoggedIn from '@/components/RedirectIfLoggedIn';
 
 export default function Home() {
   return (
+    <RedirectIfLoggedIn>
     <div className="min-h-screen">
       <main>
         {/* Hero */}
@@ -386,5 +388,6 @@ export default function Home() {
         </footer>
       </main>
     </div>
+    </RedirectIfLoggedIn>
   );
 }
